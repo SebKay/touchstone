@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+./vendor/bin/phpunit --configuration ./vendor/sebkay/wp-touchstone/phpunit.xml
