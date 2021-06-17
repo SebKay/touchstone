@@ -21,6 +21,7 @@
         }
     },
     "bin": [
-        "touchstone-unit"
+        "touchstone-unit",
+        "touchstone-integration"
     ]
 }
