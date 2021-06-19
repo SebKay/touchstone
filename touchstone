@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <task>"
+    exit 1
+fi
+
+TASK_TYPE=$1
+
+if [ $TASK_TYPE == 'setup' ]; then
+    echo 'Running setup...';
+    echo 'Setup complete.';
+elif [ $TASK_TYPE == 'test' ]; then
+    echo 'Running tests...';
+    echo 'Tests complete.';
+elif [ $TASK_TYPE == 'unit' ]; then
+    echo 'Running unit tests...';
+    echo 'Tests complete.';
+elif [ $TASK_TYPE == 'integration' ]; then
+    echo 'Running integration tests...';
+    echo 'Tests complete.';
+else
+    echo "No task available for '$TASK_TYPE'."
+fi
