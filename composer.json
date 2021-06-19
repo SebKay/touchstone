@@ -9,7 +9,8 @@
         }
     ],
     "require": {
-        "phpunit/phpunit": "^7.5"
+        "phpunit/phpunit": "^7.5",
+        "php-stubs/wordpress-stubs": "^5.7"
     },
     "require-dev": {
         "spatie/ray": "^1.26",
@@ -22,6 +23,7 @@
     },
     "bin": [
         "touchstone-setup",
+        "touchstone-test",
         "touchstone-unit",
         "touchstone-integration"
     ]
