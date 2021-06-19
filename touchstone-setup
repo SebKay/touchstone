@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-./vendor/sebkay/wp-touchstone/bin/install-wp-tests.sh wpwptouchstone_test root root 127.0.0.1:8889

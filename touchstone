@@ -1,24 +1,31 @@
 #!/usr/bin/env bash
 
+COLOR_RESET=`tput sgr0`
+COLOR_RED=`tput setaf 1`
+COLOR_GREEN=`tput setaf 2`
+COLOR_YELLOW=`tput setaf 3`
+COLOR_BLUE=`tput setaf 6`
+
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 <task>"
+    echo "${COLOR_BLUE}Usage: $0 <task>${COLOR_RESET}"
     exit 1
 fi
 
 TASK_TYPE=$1
 
 if [ $TASK_TYPE == 'setup' ]; then
-    echo 'Running setup...';
-    echo 'Setup complete.';
+    echo "${COLOR_GREEN}Running setup...${COLOR_RESET}";
+    ./vendor/sebkay/wp-touchstone/bin/install-wp-tests.sh wpwptouchstone_test root root 127.0.0.1:8889
+    echo "${COLOR_GREEN}Setup complete.${COLOR_RESET}";
 elif [ $TASK_TYPE == 'test' ]; then
-    echo 'Running tests...';
-    echo 'Tests complete.';
+    echo "${COLOR_GREEN}Running tests...${COLOR_RESET}";
+    ./vendor/bin/phpunit --config ./vendor/sebkay/wp-touchstone/phpunit.xml
 elif [ $TASK_TYPE == 'unit' ]; then
-    echo 'Running unit tests...';
-    echo 'Tests complete.';
+    echo "${COLOR_GREEN}Running unit tests...${COLOR_RESET}";
+    ./vendor/bin/phpunit --config ./vendor/sebkay/wp-touchstone/phpunit.xml --testsuite Unit
 elif [ $TASK_TYPE == 'integration' ]; then
-    echo 'Running integration tests...';
-    echo 'Tests complete.';
+    echo "${COLOR_GREEN}Running integration tests...${COLOR_RESET}";
+    ./vendor/bin/phpunit --config ./vendor/sebkay/wp-touchstone/phpunit.xml --testsuite Integration
 else
-    echo "No task available for '$TASK_TYPE'."
+    echo "${COLOR_RED}No task available for '$TASK_TYPE'.${COLOR_RESET}"
 fi

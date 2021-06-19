@@ -22,9 +22,6 @@
         }
     },
     "bin": [
-        "touchstone-setup",
-        "touchstone-test",
-        "touchstone-unit",
-        "touchstone-integration"
+        "touchstone"
     ]
 }
