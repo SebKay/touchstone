@@ -20,7 +20,7 @@ if [[ $1 == 'setup' && $2 && $3 && $4 && $5 ]]; then
     DB_USER=$3
     DB_PASS=$4
     DB_HOST=$5
-else
+elif [$1 == 'setup']; then
     echo "${COLOR_BLUE}Usage: $0 setup <db-name> <db-user> <db-password> <db-host>${COLOR_RESET}"
     exit 1
 fi
