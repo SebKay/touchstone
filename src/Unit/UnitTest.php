@@ -8,6 +8,6 @@ abstract class UnitTest extends TestCase
 {
     public function setUp() : void
     {
-        //
+        parent::setUp();
     }
 }

@@ -10,7 +10,6 @@
     ],
     "require": {
         "phpunit/phpunit": "^7.5",
-        "php-stubs/wordpress-stubs": "^5.7",
         "sebkay/wp-unit-test-stubs": "^1.0"
     },
     "require-dev": {
