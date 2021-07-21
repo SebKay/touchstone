@@ -4,7 +4,10 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
+use WPTS\Console\Commands\Setup;
 
 $app = new Application();
+
+$app->add(new Setup());
 
 $app->run();
