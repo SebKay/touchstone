@@ -5,7 +5,7 @@ namespace WPTS;
 \define('WPTS_VERSION', '2.0.0');
 
 \define('WPTS_CMD_INTRO', [
-    '<options=bold>Touchstone v' . \WPTS_VERSION . '</>',
+    '<options=bold>Touchstone v' . \WPTS_VERSION,
     '',
 ]);
 
