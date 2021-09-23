@@ -93,8 +93,8 @@ class Setup extends Command
          */
 
         try {
-            $this->verifyDatabaseCredentials($output);
-            $this->connectToHost($output);
+            $this->verifyDatabaseCredentials();
+            $this->connectToHost($input, $output);
             $this->createDatabase($input, $output);
             $this->downloadWordPressFiles($input, $output);
 
@@ -114,7 +114,7 @@ class Setup extends Command
         }
     }
 
-    protected function verifyDatabaseCredentials($output)
+    protected function verifyDatabaseCredentials()
     {
         if ($this->db_creds['host'] == '') {
             throw new \InvalidArgumentException("Please provide a database host.");
@@ -133,13 +133,19 @@ class Setup extends Command
         }
     }
 
-    protected function connectToHost($output)
+    protected function connectToHost(InputInterface $input, OutputInterface &$output)
     {
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Testing connection...');
 
+        $db_string = "mysql:host={$this->db_creds['host']};charset=UTF8";
+
+        if ($input->getOption('skip-db-creation')) {
+            $db_string .= ";dbname={$this->db_creds['name']}";
+        }
+
         try {
             $db_connection = new \PDO(
-                "mysql:host={$this->db_creds['host']};charset=UTF8",
+                $db_string,
                 $this->db_creds['user'],
                 $this->db_creds['pass']
             );
@@ -148,7 +154,14 @@ class Setup extends Command
 
             $this->db_connection = $db_connection;
         } catch (\PDOException $e) {
-            throw new \Exception('There was an error connecting to the database. Please check the credentials.');
+            switch ($e->getCode()) {
+                case '1045':
+                    throw new \Exception("Couldn't connect to host. Is the username or password incorrect?");
+                    break;
+                default:
+                    throw new \Exception("Couldn't connect to host. Please check the details.");
+                    break;
+            }
         }
     }
 
@@ -161,7 +174,7 @@ class Setup extends Command
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Creating database...');
 
         try {
-            $this->db_connection->query("CREATE DATABASE IF NOT EXISTS {$this->db_creds['name']}");
+            $this->db_connection->query("CREATE DATABASE {$this->db_creds['name']}");
         } catch (\Exception $e) {
             throw new \Exception("There was an error creating the database.");
         }
