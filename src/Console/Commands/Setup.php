@@ -81,12 +81,22 @@ class Setup extends Command
             'skip_creation' => $input->getOption('skip-db-creation') ?: false,
         ];
 
+        /**
+         * Steps
+         * 1. Verify we have all required database credientials
+         * 2. Verify connection to host
+         * 3. Create the database (unless skipped)
+         * 4. Download WordPress files
+         * 5. Save WordPress files
+         * 6. Download WordPress test files
+         * 7. Save WordPress test files
+         */
+
         try {
             $this->verifyDatabaseCredentials($output);
-            $this->connectToDatabase($output);
+            $this->connectToHost($output);
             $this->createDatabase($input, $output);
-            // $this->downloadFiles($input, $output);
-            // $this->installFiles($input, $output);
+            $this->downloadWordPressFiles($input, $output);
 
             $output->writeln([
                 '',
@@ -123,9 +133,9 @@ class Setup extends Command
         }
     }
 
-    public function connectToDatabase($output)
+    protected function connectToHost($output)
     {
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Testing database connection...');
+        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Testing connection...');
 
         try {
             $db_connection = new \PDO(
@@ -142,7 +152,7 @@ class Setup extends Command
         }
     }
 
-    public function createDatabase(InputInterface $input, OutputInterface &$output)
+    protected function createDatabase(InputInterface $input, OutputInterface &$output)
     {
         if ($input->getOption('skip-db-creation')) {
             return;
@@ -157,7 +167,7 @@ class Setup extends Command
         }
     }
 
-    public function getLatestWordPressDownloadUrl()
+    protected function getLatestWordPressDownloadUrl()
     {
         $version_check = $this->httpClient->get('https://api.wordpress.org/core/version-check/1.7/');
 
@@ -170,8 +180,9 @@ class Setup extends Command
         return $version_check_response->offers[0]->download;
     }
 
-    public function downloadFiles(InputInterface $input, OutputInterface &$output)
+    protected function downloadWordPressFiles(InputInterface $input, OutputInterface &$output)
     {
+        //---- Download files
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Downloading WordPress...');
 
         $wp_download_url = $this->getLatestWordPressDownloadUrl();
@@ -183,12 +194,8 @@ class Setup extends Command
         }
 
         \file_put_contents($this->wpZip, $wp_files->getBody()->getContents());
-    }
 
-    public function installFiles(InputInterface $input, OutputInterface &$output)
-    {
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Installing WordPress...');
-
+        //---- Save files
         if (!\file_exists($this->wpZip)) {
             throw new \InvalidArgumentException('No WordPress test files found.');
         }
@@ -201,7 +208,5 @@ class Setup extends Command
 
         $zip->extractTo(sys_get_temp_dir());
         $zip->close();
-
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Installing test files...');
     }
 }
