@@ -12,7 +12,10 @@ class Setup extends Command
     protected static $defaultName = 'setup';
 
     protected $httpClient;
-    protected $wpZip;
+    protected $tmp_dir;
+    protected $wpZipPath;
+    protected $wpDevelopZipPath;
+    protected $wpTestsDir;
     protected $db_creds = [];
 
     /**
@@ -24,8 +27,11 @@ class Setup extends Command
     {
         parent::__construct();
 
-        $this->httpClient = new \GuzzleHttp\Client();
-        $this->wpZip      = \sys_get_temp_dir() . '/wordpress.zip';
+        $this->httpClient       = new \GuzzleHttp\Client();
+        $this->tmp_dir          = \sys_get_temp_dir();
+        $this->wpZipPath        = $this->tmp_dir . '/wordpress.zip';
+        $this->wpDevelopZipPath = $this->tmp_dir . '/wordpress-develop.zip';
+        $this->wpTestsDir       = $this->tmp_dir . '/wordpress-tests-lib';
     }
 
     protected function configure(): void
@@ -83,11 +89,11 @@ class Setup extends Command
 
         /**
          * Steps
-         * 1. Verify we have all required database credientials
-         * 2. Verify connection to host
-         * 3. Create the database (unless skipped)
-         * 4. Download WordPress files
-         * 5. Save WordPress files
+         * -- 1. Verify we have all required database credientials
+         * -- 2. Verify connection to host
+         * -- 3. Create the database (unless skipped)
+         * --- 4. Download WordPress files
+         * --- 5. Save WordPress files
          * 6. Download WordPress test files
          * 7. Save WordPress test files
          */
@@ -97,6 +103,7 @@ class Setup extends Command
             $this->connectToHost($input, $output);
             $this->createDatabase($input, $output);
             $this->downloadWordPressFiles($input, $output);
+            $this->downloadWordPressTestFiles($input, $output);
 
             $output->writeln([
                 '',
@@ -195,31 +202,88 @@ class Setup extends Command
 
     protected function downloadWordPressFiles(InputInterface $input, OutputInterface &$output)
     {
-        //---- Download files
+        //---- Download zip file
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Downloading WordPress...');
 
-        $wp_download_url = $this->getLatestWordPressDownloadUrl();
+        $files_request = $this->httpClient->get($this->getLatestWordPressDownloadUrl());
 
-        $wp_files = $this->httpClient->get($wp_download_url);
-
-        if ($wp_files->getStatusCode() != 200) {
+        if ($files_request->getStatusCode() != 200) {
             throw new \Exception('There was an error downloading WordPress. Please check your connection.');
         }
 
-        \file_put_contents($this->wpZip, $wp_files->getBody()->getContents());
+        \file_put_contents($this->wpZipPath, $files_request->getBody()->getContents());
 
-        //---- Save files
-        if (!\file_exists($this->wpZip)) {
+        //---- Unzip files
+        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Installing WordPress files...');
+
+        if (!\file_exists($this->wpZipPath)) {
+            throw new \InvalidArgumentException('No WordPress files found.');
+        }
+
+        $zip = new \ZipArchive();
+
+        if ($zip->open($this->wpZipPath) != true) {
+            throw new \Exception('There was an error unzipping the WordPress files.');
+        }
+
+        $zip->extractTo($this->tmp_dir);
+        $zip->close();
+
+        // Clean up unnecessary files and folders
+        \unlink($this->tmp_dir . '/wordpress.zip');
+    }
+
+    protected function downloadWordPressTestFiles(InputInterface $input, OutputInterface &$output)
+    {
+        //---- Download zip file
+        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Downloading WordPress test files...');
+
+        // Save includes folders
+        $files_request = $this->httpClient->get('https://github.com/WordPress/wordpress-develop/archive/refs/heads/master.zip');
+
+        if ($files_request->getStatusCode() != 200) {
+            throw new \Exception('There was an error downloading the WordPress test files. Please check your connection.');
+        }
+
+        \file_put_contents($this->wpDevelopZipPath, $files_request->getBody()->getContents());
+
+        //---- Unzip files
+        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Installing WordPress test files...');
+
+        if (!\file_exists($this->wpDevelopZipPath)) {
             throw new \InvalidArgumentException('No WordPress test files found.');
         }
 
         $zip = new \ZipArchive();
 
-        if ($zip->open($this->wpZip) != true) {
-            throw new \Exception('There was an error unzipping the WordPress files.');
+        if ($zip->open($this->wpDevelopZipPath) != true) {
+            throw new \Exception('There was an error unzipping the WordPress test files.');
         }
 
-        $zip->extractTo(sys_get_temp_dir());
+        $zip->extractTo($this->tmp_dir);
         $zip->close();
+
+        $tmp_unzipped_dir = $this->tmp_dir . '/wordpress-develop-master';
+
+        // Create WordPress test folder(s)
+        if (!\file_exists($this->wpTestsDir)) {
+            \mkdir($this->wpTestsDir);
+        }
+
+        if (!\file_exists($this->wpTestsDir . '/tests/phpunit/includes')) {
+            \mkdir($this->wpTestsDir . '/tests/phpunit/includes', 0777, true);
+        }
+
+        if (!\file_exists($this->wpTestsDir . '/tests/phpunit/data')) {
+            \mkdir($this->wpTestsDir . '/tests/phpunit/data', 0777, true);
+        }
+
+        // Move necessary files to WordPress test folder
+        \rename($tmp_unzipped_dir . '/wp-tests-config-sample.php', $this->wpTestsDir . '/wp-tests-config-sample.php');
+        \rename($tmp_unzipped_dir . '/tests/phpunit/includes', $this->wpTestsDir . '/tests/phpunit/includes');
+        \rename($tmp_unzipped_dir . '/tests/phpunit/data', $this->wpTestsDir . '/tests/phpunit/data');
+
+        // Clean up unnecessary files and folders
+        \unlink($this->tmp_dir . '/wordpress-develop.zip');
     }
 }
