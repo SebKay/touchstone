@@ -1,8 +1,21 @@
 #!/usr/bin/env php
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
-// require __DIR__ . '/../../../autoload.php';
+$env              = 'dev';
+$autoloader_files = [
+    'dev'  => __DIR__ . '/../vendor/autoload.php',
+    'prod' => __DIR__ . '/../../../autoload.php',
+];
+
+foreach ($autoloader_files as $env_key => $file) {
+    if (file_exists($file)) {
+        require $file;
+
+        $env = $env_key;
+
+        break;
+    }
+}
 
 use Symfony\Component\Console\Application;
 use WPTS\Console\Commands\Setup;
@@ -11,6 +24,9 @@ use WPTS\Console\Commands\Test;
 $app = new Application();
 
 $app->add(new Setup());
-$app->add(new Test());
+
+$test_cmd = new Test();
+$test_cmd->setEnvironment($env);
+$app->add($test_cmd);
 
 $app->run();

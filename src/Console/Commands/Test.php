@@ -14,13 +14,23 @@ class Test extends Command
 {
     protected static $defaultName = 'test';
 
-    protected $tmp_dir;
+    protected $env;
+    protected $phpunitExecutablePath;
+    protected $phpunitConfigPath;
 
     public function __construct()
     {
         parent::__construct();
 
-        $this->tmp_dir = \sys_get_temp_dir();
+        $this->phpunitExecutablePath = __DIR__ . '/../../../vendor/bin/phpunit';
+        $this->phpunitConfigPath     = __DIR__ . '/../../../phpunit.xml';
+    }
+
+    public function setEnvironment(string $env)
+    {
+        $this->env = $env;
+
+        return $this;
     }
 
     protected function configure(): void
@@ -40,14 +50,14 @@ class Test extends Command
     {
         $output->writeln(\WPTS_CMD_INTRO);
 
-        /**
-         * Steps
-         * 1.
-         */
+        if ($this->env == 'prod') {
+            $this->phpunitExecutablePath = __DIR__ . '/../../../../../../vendor/bin/phpunit';
+        }
+
         try {
             $process_args = [
-                './vendor/bin/phpunit',
-                '--config',  './phpunit.xml',
+                $this->phpunitExecutablePath,
+                '--config', $this->phpunitConfigPath,
             ];
 
             if ($input->getOption('type') != 'all') {
