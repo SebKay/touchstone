@@ -323,9 +323,10 @@ class Setup extends Command
 
         try {
             // Move necessary files to WordPress test folder
+            $this->filesystem->move($this->wpTestsUnzippedFilename . '/src', $this->wpTestsDirectoryName . '/src');
+            $this->filesystem->move($this->wpTestsUnzippedFilename . '/tests/phpunit/includes', $this->wpTestsDirectoryName . '/includes');
+            $this->filesystem->move($this->wpTestsUnzippedFilename . '/tests/phpunit/data', $this->wpTestsDirectoryName . '/data');
             $this->filesystem->move($this->wpTestsUnzippedFilename . '/wp-tests-config-sample.php', $this->wpTestsDirectoryName . '/wp-tests-config.php');
-            $this->filesystem->move($this->wpTestsUnzippedFilename . '/tests/phpunit/includes', $this->wpTestsDirectoryName . '/tests/phpunit/includes');
-            $this->filesystem->move($this->wpTestsUnzippedFilename . '/tests/phpunit/data', $this->wpTestsDirectoryName . '/tests/phpunit/data');
 
             // Remove unneccessary files
             $this->filesystem->delete($this->wpTestsZipFilename);

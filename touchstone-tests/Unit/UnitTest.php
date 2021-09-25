@@ -1,6 +1,6 @@
 <?php
 
-namespace WPTS\Unit;
+namespace WPTS\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 

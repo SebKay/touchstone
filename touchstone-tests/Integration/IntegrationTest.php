@@ -1,6 +1,6 @@
 <?php
 
-namespace WPTS\Integration;
+namespace WPTS\Tests\Integration;
 
 abstract class IntegrationTest extends \WP_UnitTestCase
 {

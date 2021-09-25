@@ -1,14 +1,14 @@
 <?php
 namespace WPTS\Console\Commands;
 
+use PHPUnit\TextUI\Command as TextUICommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
-use WPConfigTransformer;
+use Symfony\Component\Process\Process;
 
 class Test extends Command
 {
@@ -44,9 +44,40 @@ class Test extends Command
          * Steps
          * 1.
          */
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Running tests...');
-
         try {
+            $process_args = [
+                './vendor/bin/phpunit',
+                '--config',  './phpunit.xml',
+            ];
+
+            if ($input->getOption('type') != 'all') {
+                $process_args[] = '--testsuite';
+
+                switch ($input->getOption('type')) {
+                    case 'unit':
+                        $process_args[] = 'Unit';
+                        break;
+                    case 'integration':
+                        $process_args[] = 'Integration';
+                        break;
+                }
+            }
+
+            $output->writeln([
+                \WPTS_CMD_ICONS['loading'] . " Running {$input->getOption('type')} tests...",
+                '',
+            ]);
+
+            $process = new Process($process_args);
+
+            $process->setTty(true);
+
+            $process->run(function ($type, $buffer) use ($output) {
+                if (Process::ERR === $type) {
+                    throw new \Exception("There was an error running the tests");
+                }
+            });
+
             $output->writeln([
                 '',
                 \WPTS_CMD_ICONS['check'] . " Tests run successfully",

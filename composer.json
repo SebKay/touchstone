@@ -14,7 +14,9 @@
         "symfony/console": "^5.3",
         "guzzlehttp/guzzle": "^7.3",
         "league/flysystem": "^2.3",
-        "wp-cli/wp-config-transformer": "^1.2"
+        "wp-cli/wp-config-transformer": "^1.2",
+        "symfony/process": "^5.3",
+        "yoast/phpunit-polyfills": "^1.0"
     },
     "require-dev": {
         "spatie/ray": "^1.26",
@@ -22,7 +24,8 @@
     },
     "autoload": {
         "psr-4" : {
-            "WPTS\\": "./src/"
+            "WPTS\\": "./src/",
+            "WPTS\\Tests\\": "./touchstone-tests/"
         },
         "files": [
             "./inc/helpers.php"
