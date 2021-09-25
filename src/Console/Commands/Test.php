@@ -66,10 +66,18 @@ class Test extends Command
 
                 switch ($input->getOption('type')) {
                     case 'unit':
-                        $process_args[] = 'Unit';
+                        if ($this->env == 'dev') {
+                            $process_args[] = 'Unit-dev';
+                        } else {
+                            $process_args[] = 'Unit';
+                        }
                         break;
                     case 'integration':
-                        $process_args[] = 'Integration';
+                        if ($this->env == 'dev') {
+                            $process_args[] = 'Integration-dev';
+                        } else {
+                            $process_args[] = 'Integration';
+                        }
                         break;
                 }
             }

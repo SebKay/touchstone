@@ -8,11 +8,17 @@
 	convertWarningsToExceptions="true"
 	>
 	<testsuites>
-		<testsuite name="Unit">
+		<testsuite name="Unit-dev">
 			<directory suffix="Test.php">touchstone-tests/Unit/</directory>
 		</testsuite>
-		<testsuite name="Integration">
+		<testsuite name="Integration-dev">
 			<directory suffix="Test.php">touchstone-tests/Integration/</directory>
+		</testsuite>
+		<testsuite name="Unit-dev">
+			<directory suffix="Test.php">../../../tests/Unit/</directory>
+		</testsuite>
+		<testsuite name="Integration-dev">
+			<directory suffix="Test.php">../../../tests/Integration/</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>
