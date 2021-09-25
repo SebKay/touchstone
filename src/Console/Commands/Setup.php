@@ -203,7 +203,7 @@ class Setup extends Command
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Creating database...');
 
         try {
-            $this->db_connection->query("CREATE DATABASE {$this->db_creds['name']}");
+            $this->db_connection->query("CREATE DATABASE IF NOT EXISTS {$this->db_creds['name']}");
         } catch (\Exception $e) {
             throw new \Exception("There was an error creating the database.");
         }
