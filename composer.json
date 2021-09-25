@@ -13,7 +13,8 @@
         "sebkay/wp-unit-test-stubs": "^1.0",
         "symfony/console": "^5.3",
         "guzzlehttp/guzzle": "^7.3",
-        "league/flysystem": "^2.3"
+        "league/flysystem": "^2.3",
+        "wp-cli/wp-config-transformer": "^1.2"
     },
     "require-dev": {
         "spatie/ray": "^1.26",

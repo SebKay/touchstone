@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use WPConfigTransformer;
 
 class Setup extends Command
 {
@@ -99,7 +100,7 @@ class Setup extends Command
          * --- 5. Save WordPress files
          * --- 6. Download WordPress test files
          * --- 7. Save WordPress test files
-         * 8. Change config data in wp-tests-config
+         * --- 8. Change config data in wp-tests-config.php
          */
 
         try {
@@ -108,6 +109,7 @@ class Setup extends Command
             $this->createDatabase($input, $output);
             $this->downloadWordPressFiles($input, $output);
             $this->downloadWordPressTestFiles($input, $output);
+            $this->configureWordPressTestFiles($input, $output);
 
             $output->writeln([
                 '',
@@ -330,6 +332,28 @@ class Setup extends Command
             $this->filesystem->deleteDirectory($this->wpTestsUnzippedFilename);
         } catch (\Throwable $e) {
             throw new \Exception('There was an error installing the WordPress test files.');
+        }
+    }
+
+    /**
+     * Change settings in wp-tests-config.php
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function configureWordPressTestFiles(InputInterface $input, OutputInterface &$output)
+    {
+        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Configuring WordPress test files...');
+
+        $transformer = new WPConfigTransformer($this->tmp_dir . '/' . $this->wpTestsDirectoryName . '/' . 'wp-tests-config.php');
+
+        try {
+            $transformer->update('constant', 'DB_NAME', $this->db_creds['name']);
+            $transformer->update('constant', 'DB_USER', $this->db_creds['user']);
+            $transformer->update('constant', 'DB_PASSWORD', $this->db_creds['pass']);
+            $transformer->update('constant', 'DB_HOST', $this->db_creds['host']);
+        } catch (\Throwable $e) {
+            throw new \Exception("There was an error configuring the WordPress test files.");
         }
     }
 }
