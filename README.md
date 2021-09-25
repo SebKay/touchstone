@@ -1,55 +1,136 @@
 # Touchstone
 
-An easy to use tool for running WordPress unit and integration tests.
+An easy to use tool for running WordPress Unit and Integration tests.
+
+Touchstone is a modern wrapper for running the official WordPress testsuite.
+
+The official way of running the testsuite is horribly complicated and incredibly prone to user error.
+
+Touchstone fixes both of those issues by making the process of creating and running tests easy.
+
+## Installation
+
+Run the following command to install Touchstone in your project:
+
+```shell
+composer require --dev sebkay/touchstone
+```
 
 ## Usage
 
 ### 1.) Setup
 
-Install the WordPress test files and create the database used for the integration tests.
+You'll need to run the setup process from time to time. This downloads and installs both WordPress and the official WordPress test files in your temp directory.
+
+If you ever have problems running your tests, run the setup command. It's more than likely you've restarted your machine since the last time you ran the tests which deletes the WordPress test files. Re-running the setup process will usually fix the problem.
+
+Here's the command needed to run the setup process:
 
 ```shell
-# Script
-./vendor/bin/touchstone setup <db-name> <db-user> <db-password> <db-host>
+# Command
+./vendor/bin/touchstone setup --db-host=[HOST] --db-name=[DATABASE NAME] --db-user=[DATABASE USER] --db-pass=[DATABASE PASSWORD] --skip-db-creation=[FALSE]
 
 # Example
-./vendor/bin/touchstone setup wp_tests root root 127.0.0.1:8889
+./vendor/bin/touchstone setup --db-host=127.0.0.1:8889 --db-name=touchstone_tests --db-user=root --db-pass=root --skip-db-creation=true
 ```
 
-If you've already run the setup before then you can skip the database creation and just install the WordPress test files like so:
+### 2.) Creating Tests
+
+All your tests will need to be in the following structure from the root of your project:
 
 ```shell
-# Script
-./vendor/bin/touchstone setup <db-name> <db-user> <db-password> <db-host> <skip-db-creation>
-
-# Example
-./vendor/bin/touchstone setup wp_tests root root 127.0.0.1:8889 true
+tests/
+    Unit/
+        ExampleUnitTest.php
+    Integration/
+        ExampleIntegrationTest.php
 ```
 
-**Important**: You'll have to skip database creation every time you restart you computer as the test files are stored in a temporary directory.
+All your Unit tests will need to extend the `WPTS\Tests\UnitTest` class and all your integrationt tests will need to extend the `WPTS\Tests\IntegrationTest` class.
 
-### 2.) Run Tests
+Here's an example Unit test:
 
-#### Unit
+```php
+<?php
 
-To run unit tests you can pass `unit` to the Touchstone script:
+namespace WPTS\Tests\Unit;
 
-```shell
-./vendor/bin/touchstone unit
+class ExampleUnitTest extends UnitTest
+{
+    public function test_it_works()
+    {
+        $this->assertTrue(true);
+    }
+}
 ```
 
-#### Integration
+Here's an example Integration test:
 
-To run integration tests you can pass `integration` to the Touchstone script:
+```php
+<?php
 
-```shell
-./vendor/bin/touchstone integration
+namespace WPTS\Tests\Integration;
+
+class ExampleIntegrationTest extends IntegrationTest
+{
+    public function test_post_title_was_added()
+    {
+        $post_id = $this->factory()->post->create([
+            'post_title' => 'Example post title',
+        ]);
+
+        $post = \get_post($post_id);
+
+        $this->assertSame('Example post title', $post->post_title);
+    }
+}
 ```
 
-#### All
+### 3.) Running Tests
 
-To run all tests at once you can pass `test` to the Touchstone script:
+You can run either all of your tests or a single testsuite with the following commands:
+
 
 ```shell
+# Run all tests
 ./vendor/bin/touchstone test
+
+# Run Unit tests
+./vendor/bin/touchstone test --type=unit
+
+# Run Integration tests
+./vendor/bin/touchstone test --type=integration
+```
+
+## Composer Script
+
+You can add Composer scripts so you don't need to memorise the above commands.
+
+To do so add the following to your `composer.json` file:
+
+```json
+...
+    "scripts": {
+        "touchstone:setup": "./vendor/bin/touchstone setup --db-host=127.0.0.1:8889 --db-name=touchstone_tests --db-user=root --db-pass=root --skip-db-creation=true",
+        "touchstone:test": "./vendor/bin/touchstone test",
+        "touchstone:unit": "./vendor/bin/touchstone test --type=unit",
+        "touchstone:integration": "./vendor/bin/touchstone test --type=integration"
+    }
+...
+```
+
+Then you can run the following from the command line:
+
+```shell
+# Run setup
+composer touchstone:setup
+
+# Run all tests
+composer touchstone:test
+
+# Run Unit tests
+composer touchstone:unit
+
+# Run Integration tests
+composer touchstone:integration
 ```
