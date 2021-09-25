@@ -58,11 +58,16 @@ class Test extends Command
             $process_args = [
                 $this->phpunitExecutablePath,
                 '--config', $this->phpunitConfigPath,
+                '--testsuite',
             ];
 
-            if ($input->getOption('type') != 'all') {
-                $process_args[] = '--testsuite';
-
+            if ($input->getOption('type') == 'all') {
+                if ($this->env == 'dev') {
+                    $process_args[] = 'Unit-dev,Integration-dev';
+                } else {
+                    $process_args[] = 'Unit,Integration';
+                }
+            } else {
                 switch ($input->getOption('type')) {
                     case 'unit':
                         if ($this->env == 'dev') {
