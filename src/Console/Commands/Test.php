@@ -52,6 +52,7 @@ class Test extends Command
 
         if ($this->env == 'prod') {
             $this->phpunitExecutablePath = __DIR__ . '/../../../../../../vendor/bin/phpunit';
+            $this->phpunitConfigPath     = __DIR__ . '/../../../../../../phpunit.xml';
         }
 
         try {
