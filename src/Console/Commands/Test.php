@@ -23,7 +23,7 @@ class Test extends Command
         parent::__construct();
 
         $this->phpunitExecutablePath = __DIR__ . '/../../../vendor/bin/phpunit';
-        $this->phpunitConfigPath     = __DIR__ . '/../../../phpunit.xml';
+        $this->phpunitConfigPath     = __DIR__ . '/../../../phpunit-touchstone.xml';
     }
 
     public function setEnvironment(string $env)
@@ -55,34 +55,36 @@ class Test extends Command
         }
 
         try {
-            $process_args = [
-                $this->phpunitExecutablePath,
-                '--config', $this->phpunitConfigPath,
-                '--testsuite',
-            ];
+            if ($input->getOption('type') != 'test') {
+                $process_args = [
+                    $this->phpunitExecutablePath,
+                    '--config', $this->phpunitConfigPath,
+                    '--testsuite',
+                ];
 
-            if ($input->getOption('type') == 'all') {
-                if ($this->env == 'dev') {
-                    $process_args[] = 'Unit-dev,Integration-dev';
+                if ($input->getOption('type') == 'all') {
+                    if ($this->env == 'dev') {
+                        $process_args[] = 'Unit-dev,Integration-dev';
+                    } else {
+                        $process_args[] = 'Unit,Integration';
+                    }
                 } else {
-                    $process_args[] = 'Unit,Integration';
-                }
-            } else {
-                switch ($input->getOption('type')) {
-                    case 'unit':
-                        if ($this->env == 'dev') {
-                            $process_args[] = 'Unit-dev';
-                        } else {
-                            $process_args[] = 'Unit';
-                        }
-                        break;
-                    case 'integration':
-                        if ($this->env == 'dev') {
-                            $process_args[] = 'Integration-dev';
-                        } else {
-                            $process_args[] = 'Integration';
-                        }
-                        break;
+                    switch ($input->getOption('type')) {
+                        case 'unit':
+                            if ($this->env == 'dev') {
+                                $process_args[] = 'Unit-dev';
+                            } else {
+                                $process_args[] = 'Unit';
+                            }
+                            break;
+                        case 'integration':
+                            if ($this->env == 'dev') {
+                                $process_args[] = 'Integration-dev';
+                            } else {
+                                $process_args[] = 'Integration';
+                            }
+                            break;
+                    }
                 }
             }
 
@@ -91,17 +93,19 @@ class Test extends Command
                 '',
             ]);
 
-            $this->preTestChecks();
+            if ($input->getOption('type') != 'test') {
+                $this->preTestChecks();
 
-            $process = new Process($process_args);
+                $process = new Process($process_args);
 
-            $process->setTty(true);
+                $process->setTty(true);
 
-            $process->run(function ($type, $buffer) use ($output) {
-                if (Process::ERR === $type) {
-                    throw new \Exception("There was an error running the tests");
-                }
-            });
+                $process->run(function ($type, $buffer) use ($output) {
+                    if (Process::ERR === $type) {
+                        throw new \Exception("There was an error running the tests");
+                    }
+                });
+            }
 
             $output->writeln([
                 '',
