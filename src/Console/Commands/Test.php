@@ -91,6 +91,8 @@ class Test extends Command
                 '',
             ]);
 
+            $this->preTestChecks();
+
             $process = new Process($process_args);
 
             $process->setTty(true);
@@ -114,6 +116,37 @@ class Test extends Command
             ]);
 
             return Command::FAILURE;
+        }
+    }
+
+    protected function preTestChecks()
+    {
+        $this->verifyTestFilesExist();
+    }
+
+    protected function verifyTestFilesExist()
+    {
+        $tmp_dir         = \sys_get_temp_dir();
+        $wp_files_root   = $tmp_dir . '/wordpress';
+        $test_files_root = $tmp_dir . '/wordpress-tests-lib';
+
+        if (!\is_dir($wp_files_root)) {
+            throw new \InvalidArgumentException("Cannot find WordPress folder. Please run setup command.");
+        }
+
+        if (!\is_dir($test_files_root)) {
+            throw new \InvalidArgumentException("Cannot find WordPress test folder. Please run setup command.");
+        }
+
+        if (!\file_exists($test_files_root . '/includes/functions.php')) {
+            throw new \InvalidArgumentException("Cannot find WordPress test files. Please run setup command.");
+        }
+    }
+
+    protected function verifyTestConfigExists()
+    {
+        if (!\file_exists($this->phpunitExecutablePath)) {
+            throw new \InvalidArgumentException("Cannot find PHPUnit config file. Please create a phpunit.xml file.");
         }
     }
 }
