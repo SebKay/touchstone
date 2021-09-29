@@ -1,10 +1,8 @@
 # Touchstone
 
-An easy to use tool for running WordPress Unit and Integration tests.
+A modern wrapper around the official WordPress testsuite. It can be used to run both Unit and Integration tests.
 
-Touchstone is a modern wrapper for running the official WordPress testsuite.
-
-The official way of running the testsuite is horribly complicated and incredibly prone to user error.
+The official way of running the WordPress testsuite is horribly complicated and incredibly prone to user error.
 
 Touchstone fixes both of those issues by making the process of creating and running tests easy.
 
@@ -13,16 +11,14 @@ Touchstone fixes both of those issues by making the process of creating and runn
 Run the following command to install Touchstone in your project:
 
 ```shell
-composer require --dev sebkay/touchstone
+composer require sebkay/touchstone --dev
 ```
 
 ## Usage
 
 ### 1.) Setup
 
-You'll need to run the setup process from time to time. This downloads and installs both WordPress and the official WordPress test files in your temp directory.
-
-If you ever have problems running your tests, run the setup command. It's more than likely you've restarted your machine since the last time you ran the tests which deletes the WordPress test files. Re-running the setup process will usually fix the problem.
+Running the setup process downloads and installs both WordPress and the official WordPress test files in your temp directory.
 
 Here's the command needed to run the setup process:
 
@@ -32,6 +28,27 @@ Here's the command needed to run the setup process:
 
 # Example
 ./vendor/bin/touchstone setup --db-host=127.0.0.1:8889 --db-name=touchstone_tests --db-user=root --db-pass=root --skip-db-creation=true
+```
+
+You'll also need a `phpunit.xml` file in your project. Here's an example you can use to get going quickly:
+
+```xml
+<?xml version="1.0"?>
+<phpunit
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    >
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">tests/Unit/</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory suffix="Test.php">tests/Integration/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
 ```
 
 ### 2.) Creating Tests
@@ -90,7 +107,6 @@ class ExampleIntegrationTest extends IntegrationTest
 
 You can run either all of your tests or a single testsuite with the following commands:
 
-
 ```shell
 # Run all tests
 ./vendor/bin/touchstone test
@@ -102,16 +118,16 @@ You can run either all of your tests or a single testsuite with the following co
 ./vendor/bin/touchstone test --type=integration
 ```
 
-## Composer Script
+## Composer Scripts
 
-You can add Composer scripts so you don't need to memorise the above commands.
+You can create Composer scripts so you don't need to memorise the above commands.
 
 To do so add the following to your `composer.json` file:
 
 ```json
 ...
     "scripts": {
-        "touchstone:setup": "./vendor/bin/touchstone setup --db-host=127.0.0.1:8889 --db-name=touchstone_tests --db-user=root --db-pass=root --skip-db-creation=true",
+        "touchstone:setup": "./vendor/bin/touchstone setup --db-host=[HOST] --db-name=[DATABASE NAME] --db-user=[DATABASE USER] --db-pass=[DATABASE PASSWORD] --skip-db-creation=[FALSE]",
         "touchstone:test": "./vendor/bin/touchstone test",
         "touchstone:unit": "./vendor/bin/touchstone test --type=unit",
         "touchstone:integration": "./vendor/bin/touchstone test --type=integration"
@@ -134,3 +150,9 @@ composer touchstone:unit
 # Run Integration tests
 composer touchstone:integration
 ```
+
+## Troubleshooting
+
+### Tests Won't Run
+
+If you ever have problems running your tests, run the `setup` command. It's more than likely you've restarted your machine since the last time you ran the tests which deletes the WordPress test files. Re-running the setup process will usually fix the problem.
