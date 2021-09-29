@@ -30,27 +30,6 @@ Here's the command needed to run the setup process:
 ./vendor/bin/touchstone setup --db-host=127.0.0.1:8889 --db-name=touchstone_tests --db-user=root --db-pass=root --skip-db-creation=true
 ```
 
-You'll also need a `phpunit.xml` file in your project. Here's an example you can use to get going quickly:
-
-```xml
-<?xml version="1.0"?>
-<phpunit
-    colors="true"
-    convertErrorsToExceptions="true"
-    convertNoticesToExceptions="true"
-    convertWarningsToExceptions="true"
-    >
-    <testsuites>
-        <testsuite name="Unit">
-            <directory suffix="Test.php">tests/Unit/</directory>
-        </testsuite>
-        <testsuite name="Integration">
-            <directory suffix="Test.php">tests/Integration/</directory>
-        </testsuite>
-    </testsuites>
-</phpunit>
-```
-
 ### 2.) Creating Tests
 
 All your tests will need to be in the following structure from the root of your project:
