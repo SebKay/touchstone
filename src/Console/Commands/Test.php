@@ -84,26 +84,24 @@ class Test extends Command
                         }
                         break;
                 }
-        }
+            }
 
             $output->writeln([
                 \WPTS_CMD_ICONS['loading'] . " Running {$input->getOption('type')} tests...",
                 '',
             ]);
 
-            if ($input->getOption('type') != 'test') {
-                $this->preTestChecks();
+            $this->preTestChecks();
 
-                $process = new Process($process_args);
+            $process = new Process($process_args);
 
-                $process->setTty(true);
+            $process->setTty(true);
 
-                $process->run(function ($type, $buffer) use ($output) {
-                    if (Process::ERR === $type) {
-                        throw new \Exception("There was an error running the tests");
-                    }
-                });
-            }
+            $process->run(function ($type, $buffer) use ($output) {
+                if (Process::ERR === $type) {
+                    throw new \Exception("There was an error running the tests");
+                }
+            });
 
             $output->writeln([
                 '',
