@@ -23,13 +23,18 @@
         "squizlabs/php_codesniffer": "^3.6"
     },
     "autoload": {
-        "psr-4" : {
+        "psr-4": {
             "WPTS\\": "./src/",
             "WPTS\\Tests\\": "./touchstone-tests/"
         },
         "files": [
             "./inc/helpers.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WPTSTests\\": "./tests/"
+        }
     },
     "bin": [
         "bin/touchstone"

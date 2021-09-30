@@ -1,10 +1,7 @@
 <?php
 namespace WPTS\Console\Commands;
 
-use PHPUnit\TextUI\Command as TextUICommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Formatter\OutputFormatter;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,7 +20,7 @@ class Test extends Command
         parent::__construct();
 
         $this->phpunitExecutablePath = __DIR__ . '/../../../vendor/bin/phpunit';
-        $this->phpunitConfigPath     = __DIR__ . '/../../../phpunit.xml';
+        $this->phpunitConfigPath     = __DIR__ . '/../../../phpunit-touchstone.xml';
     }
 
     public function setEnvironment(string $env)
