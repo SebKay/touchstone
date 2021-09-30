@@ -38,5 +38,9 @@
     },
     "bin": [
         "bin/touchstone"
-    ]
+    ],
+    "scripts": {
+        "dev": "git clean -xffd && composer install",
+        "prod": "git clean -xffd && composer install --no-dev"
+    }
 }
