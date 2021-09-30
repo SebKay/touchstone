@@ -10,7 +10,8 @@ class SetupTest extends TestCase
     /**
      * @var CommandTester
      */
-    protected $testTester;
+    protected $cmdTester;
+
     protected $cmd;
 
     public function setUp(): void
@@ -19,53 +20,53 @@ class SetupTest extends TestCase
 
         $app->add(new Setup());
 
-        $this->cmd        = $app->find('setup');
-        $this->testTester = new CommandTester($this->cmd);
+        $this->cmd       = $app->find('setup');
+        $this->cmdTester = new CommandTester($this->cmd);
     }
 
     public function test_it_fails_when_no_database_host_is_provided()
     {
-        $this->testTester->execute([
+        $this->cmdTester->execute([
             'command'  => $this->cmd->getName(),
         ]);
 
-        $this->assertSame(1, $this->testTester->getStatusCode());
-        $this->assertStringContainsString('Please provide a database host.', $this->testTester->getDisplay());
+        $this->assertSame(1, $this->cmdTester->getStatusCode());
+        $this->assertStringContainsString('Please provide a database host.', $this->cmdTester->getDisplay());
     }
 
     public function test_it_fails_when_no_database_name_is_provided()
     {
-        $this->testTester->execute([
+        $this->cmdTester->execute([
             'command'   => $this->cmd->getName(),
             '--db-host' => 'test',
         ]);
 
-        $this->assertSame(1, $this->testTester->getStatusCode());
-        $this->assertStringContainsString('Please provide a database name.', $this->testTester->getDisplay());
+        $this->assertSame(1, $this->cmdTester->getStatusCode());
+        $this->assertStringContainsString('Please provide a database name.', $this->cmdTester->getDisplay());
     }
 
     public function test_it_fails_when_no_database_user_is_provided()
     {
-        $this->testTester->execute([
+        $this->cmdTester->execute([
             'command'   => $this->cmd->getName(),
             '--db-host' => 'test',
             '--db-name' => 'test',
         ]);
 
-        $this->assertSame(1, $this->testTester->getStatusCode());
-        $this->assertStringContainsString('Please provide a database user.', $this->testTester->getDisplay());
+        $this->assertSame(1, $this->cmdTester->getStatusCode());
+        $this->assertStringContainsString('Please provide a database user.', $this->cmdTester->getDisplay());
     }
 
     public function test_it_fails_when_no_database_password_is_provided()
     {
-        $this->testTester->execute([
+        $this->cmdTester->execute([
             'command'   => $this->cmd->getName(),
             '--db-host' => 'test',
             '--db-name' => 'test',
             '--db-user' => 'test',
         ]);
 
-        $this->assertSame(1, $this->testTester->getStatusCode());
-        $this->assertStringContainsString('Please provide a database password.', $this->testTester->getDisplay());
+        $this->assertSame(1, $this->cmdTester->getStatusCode());
+        $this->assertStringContainsString('Please provide a database password.', $this->cmdTester->getDisplay());
     }
 }
