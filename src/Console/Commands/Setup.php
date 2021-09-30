@@ -1,4 +1,5 @@
 <?php
+
 namespace WPTS\Console\Commands;
 
 use Symfony\Component\Console\Command\Command;
@@ -14,20 +15,16 @@ class Setup extends Command
 {
     protected static $defaultName = 'setup';
 
-    protected $httpClient;
-    protected $tmp_dir;
-    protected $wpZipFilename           = 'wordpress.zip';
-    protected $wpDirectoryName         = 'wordpress';
-    protected $wpTestsZipFilename      = 'wordpress-develop.zip';
-    protected $wpTestsUnzippedFilename = 'wordpress-develop-master';
-    protected $wpTestsDirectoryName    = 'wordpress-tests-lib';
-    protected $filesystem;
-    protected $db_creds = [];
-
-    /**
-     * @var \PDO
-     */
-    protected $db_connection;
+    protected \GuzzleHttp\Client $httpClient;
+    protected string $tmp_dir;
+    protected string $wpZipFilename           = 'wordpress.zip';
+    protected string $wpDirectoryName         = 'wordpress';
+    protected string $wpTestsZipFilename      = 'wordpress-develop.zip';
+    protected string $wpTestsUnzippedFilename = 'wordpress-develop-master';
+    protected string $wpTestsDirectoryName    = 'wordpress-tests-lib';
+    protected \League\Flysystem\Filesystem $filesystem;
+    protected array $db_creds = [];
+    protected \PDO $db_connection;
 
     public function __construct()
     {
@@ -130,7 +127,7 @@ class Setup extends Command
     /**
      * Check the db credentials array has all the necessary data
      */
-    protected function validateDatabaseCredentials()
+    protected function validateDatabaseCredentials(): void
     {
         if ($this->db_creds['host'] == '') {
             throw new \InvalidArgumentException("Please provide a database host.");
@@ -156,7 +153,7 @@ class Setup extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function connectToHost(InputInterface $input, OutputInterface &$output)
+    protected function connectToHost(InputInterface $input, OutputInterface &$output): void
     {
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Testing connection...');
 
@@ -194,7 +191,7 @@ class Setup extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function createDatabase(InputInterface $input, OutputInterface &$output)
+    protected function createDatabase(InputInterface $input, OutputInterface &$output): void
     {
         if ($input->getOption('skip-db-creation')) {
             return;
@@ -221,7 +218,7 @@ class Setup extends Command
         $version_check_response = \json_decode($version_check->getBody()->getContents());
 
         if ($version_check->getStatusCode() != 200 || !\property_exists($version_check_response, 'offers')) {
-            throw new \Exception('There was an error getting the latest version of WordPress. Please check your connection.');
+            throw new \Exception('There was an error getting the latest version of WordPress. Please check your connection.'); // @codingStandardsIgnoreLine
         }
 
         return $version_check_response->offers[0]->download;
@@ -233,7 +230,7 @@ class Setup extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function downloadWordPressFiles(InputInterface $input, OutputInterface &$output)
+    protected function downloadWordPressFiles(InputInterface $input, OutputInterface &$output): void
     {
         //---- Download zip file
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Downloading WordPress files...');
@@ -284,7 +281,7 @@ class Setup extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function downloadWordPressTestFiles(InputInterface $input, OutputInterface &$output)
+    protected function downloadWordPressTestFiles(InputInterface $input, OutputInterface &$output): void
     {
         //---- Download zip file
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Downloading WordPress test files...');
@@ -297,10 +294,12 @@ class Setup extends Command
         }
 
         // Download
-        $files_request = $this->httpClient->get('https://github.com/WordPress/wordpress-develop/archive/refs/heads/master.zip');
+        $files_request = $this->httpClient->get(
+            'https://github.com/WordPress/wordpress-develop/archive/refs/heads/master.zip'
+        );
 
         if ($files_request->getStatusCode() != 200) {
-            throw new \Exception('There was an error downloading the WordPress test files. Please check your connection.');
+            throw new \Exception('There was an error downloading the WordPress test files. Please check your connection.'); // @codingStandardsIgnoreLine
         }
 
         \file_put_contents($this->tmp_dir . '/' . $this->wpTestsZipFilename, $files_request->getBody()->getContents());
@@ -323,10 +322,25 @@ class Setup extends Command
 
         try {
             // Move necessary files to WordPress test folder
-            $this->filesystem->move($this->wpTestsUnzippedFilename . '/src', $this->wpTestsDirectoryName . '/src');
-            $this->filesystem->move($this->wpTestsUnzippedFilename . '/tests/phpunit/includes', $this->wpTestsDirectoryName . '/includes');
-            $this->filesystem->move($this->wpTestsUnzippedFilename . '/tests/phpunit/data', $this->wpTestsDirectoryName . '/data');
-            $this->filesystem->move($this->wpTestsUnzippedFilename . '/wp-tests-config-sample.php', $this->wpTestsDirectoryName . '/wp-tests-config.php');
+            $this->filesystem->move(
+                $this->wpTestsUnzippedFilename . '/src',
+                $this->wpTestsDirectoryName . '/src'
+            );
+
+            $this->filesystem->move(
+                $this->wpTestsUnzippedFilename . '/tests/phpunit/includes',
+                $this->wpTestsDirectoryName . '/includes'
+            );
+
+            $this->filesystem->move(
+                $this->wpTestsUnzippedFilename . '/tests/phpunit/data',
+                $this->wpTestsDirectoryName . '/data'
+            );
+
+            $this->filesystem->move(
+                $this->wpTestsUnzippedFilename . '/wp-tests-config-sample.php',
+                $this->wpTestsDirectoryName . '/wp-tests-config.php'
+            );
 
             // Remove unneccessary files
             $this->filesystem->delete($this->wpTestsZipFilename);
@@ -342,11 +356,13 @@ class Setup extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function configureWordPressTestFiles(InputInterface $input, OutputInterface &$output)
+    protected function configureWordPressTestFiles(InputInterface $input, OutputInterface &$output): void
     {
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Configuring WordPress test files...');
 
-        $transformer = new WPConfigTransformer($this->tmp_dir . '/' . $this->wpTestsDirectoryName . '/' . 'wp-tests-config.php');
+        $transformer = new WPConfigTransformer(
+            $this->tmp_dir . '/' . $this->wpTestsDirectoryName . '/' . 'wp-tests-config.php'
+        );
 
         try {
             $transformer->update('constant', 'DB_NAME', $this->db_creds['name']);

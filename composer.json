@@ -20,7 +20,8 @@
     },
     "require-dev": {
         "spatie/ray": "^1.26",
-        "squizlabs/php_codesniffer": "^3.6"
+        "squizlabs/php_codesniffer": "^3.6",
+        "vimeo/psalm": "^4.10"
     },
     "autoload": {
         "psr-4": {
@@ -38,5 +39,14 @@
     },
     "bin": [
         "bin/touchstone"
-    ]
+    ],
+    "scripts": {
+        "dev": "git clean -xffd && composer install --prefer-dist --no-progress",
+        "prod": "git clean -xffd && composer install --prefer-dist --no-progress --no-dev",
+        "test": "./vendor/bin/phpunit",
+        "lint": "./vendor/bin/phpcs ./src --standard=PSR12",
+        "fix": "./vendor/bin/phpcbf ./src --standard=PSR12",
+        "analyse": "./vendor/bin/psalm",
+        "analyse-with-info": "@analyse --show-info=true"
+    }
 }
