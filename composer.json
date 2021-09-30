@@ -41,7 +41,9 @@
         "bin/touchstone"
     ],
     "scripts": {
-        "dev": "git clean -xffd && composer install",
-        "prod": "git clean -xffd && composer install --no-dev"
+        "dev": "git clean -xffd && composer install --prefer-dist --no-progress",
+        "prod": "git clean -xffd && composer install --prefer-dist --no-progress --no-dev",
+        "lint": "./vendor/bin/phpcs ./ --standard=PSR12 --ignore=./vendor",
+        "fix": "./vendor/bin/phpcbf ./ --standard=PSR12 --ignore=./vendor"
     }
 }
