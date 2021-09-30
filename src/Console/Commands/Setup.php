@@ -222,7 +222,7 @@ class Setup extends Command
         $version_check_response = \json_decode($version_check->getBody()->getContents());
 
         if ($version_check->getStatusCode() != 200 || !\property_exists($version_check_response, 'offers')) {
-            throw new \Exception('There was an error getting the latest version of WordPress. Please check your connection.');
+            throw new \Exception('There was an error getting the latest version of WordPress. Please check your connection.'); // @codingStandardsIgnoreLine
         }
 
         return $version_check_response->offers[0]->download;
@@ -298,10 +298,12 @@ class Setup extends Command
         }
 
         // Download
-        $files_request = $this->httpClient->get('https://github.com/WordPress/wordpress-develop/archive/refs/heads/master.zip');
+        $files_request = $this->httpClient->get(
+            'https://github.com/WordPress/wordpress-develop/archive/refs/heads/master.zip'
+        );
 
         if ($files_request->getStatusCode() != 200) {
-            throw new \Exception('There was an error downloading the WordPress test files. Please check your connection.');
+            throw new \Exception('There was an error downloading the WordPress test files. Please check your connection.'); // @codingStandardsIgnoreLine
         }
 
         \file_put_contents($this->tmp_dir . '/' . $this->wpTestsZipFilename, $files_request->getBody()->getContents());
@@ -324,10 +326,25 @@ class Setup extends Command
 
         try {
             // Move necessary files to WordPress test folder
-            $this->filesystem->move($this->wpTestsUnzippedFilename . '/src', $this->wpTestsDirectoryName . '/src');
-            $this->filesystem->move($this->wpTestsUnzippedFilename . '/tests/phpunit/includes', $this->wpTestsDirectoryName . '/includes');
-            $this->filesystem->move($this->wpTestsUnzippedFilename . '/tests/phpunit/data', $this->wpTestsDirectoryName . '/data');
-            $this->filesystem->move($this->wpTestsUnzippedFilename . '/wp-tests-config-sample.php', $this->wpTestsDirectoryName . '/wp-tests-config.php');
+            $this->filesystem->move(
+                $this->wpTestsUnzippedFilename . '/src',
+                $this->wpTestsDirectoryName . '/src'
+            );
+
+            $this->filesystem->move(
+                $this->wpTestsUnzippedFilename . '/tests/phpunit/includes',
+                $this->wpTestsDirectoryName . '/includes'
+            );
+
+            $this->filesystem->move(
+                $this->wpTestsUnzippedFilename . '/tests/phpunit/data',
+                $this->wpTestsDirectoryName . '/data'
+            );
+
+            $this->filesystem->move(
+                $this->wpTestsUnzippedFilename . '/wp-tests-config-sample.php',
+                $this->wpTestsDirectoryName . '/wp-tests-config.php'
+            );
 
             // Remove unneccessary files
             $this->filesystem->delete($this->wpTestsZipFilename);
@@ -347,7 +364,9 @@ class Setup extends Command
     {
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Configuring WordPress test files...');
 
-        $transformer = new WPConfigTransformer($this->tmp_dir . '/' . $this->wpTestsDirectoryName . '/' . 'wp-tests-config.php');
+        $transformer = new WPConfigTransformer(
+            $this->tmp_dir . '/' . $this->wpTestsDirectoryName . '/' . 'wp-tests-config.php'
+        );
 
         try {
             $transformer->update('constant', 'DB_NAME', $this->db_creds['name']);
