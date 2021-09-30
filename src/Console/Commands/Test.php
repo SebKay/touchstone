@@ -12,9 +12,9 @@ class Test extends Command
 {
     protected static $defaultName = 'test';
 
-    protected $env;
-    protected $phpunitExecutablePath;
-    protected $phpunitConfigPath;
+    protected string $env;
+    protected string $phpunitExecutablePath;
+    protected string $phpunitConfigPath;
 
     public function __construct()
     {
@@ -24,7 +24,7 @@ class Test extends Command
         $this->phpunitConfigPath     = __DIR__ . '/../../../phpunit-touchstone.xml';
     }
 
-    public function setEnvironment(string $env)
+    public function setEnvironment(string $env): self
     {
         $this->env = $env;
 
@@ -95,7 +95,7 @@ class Test extends Command
 
             $process->setTty(true);
 
-            $process->run(function ($type, $buffer) use ($output) {
+            $process->run(function (string $type, string $buffer) use ($output) {
                 if (Process::ERR === $type) {
                     throw new \Exception("There was an error running the tests");
                 }
@@ -117,12 +117,12 @@ class Test extends Command
         }
     }
 
-    protected function preTestChecks()
+    protected function preTestChecks(): void
     {
         $this->verifyTestFilesExist();
     }
 
-    protected function verifyTestFilesExist()
+    protected function verifyTestFilesExist(): void
     {
         $tmp_dir         = \sys_get_temp_dir();
         $wp_files_root   = $tmp_dir . '/wordpress';
@@ -141,7 +141,7 @@ class Test extends Command
         }
     }
 
-    protected function verifyTestConfigExists()
+    protected function verifyTestConfigExists(): void
     {
         if (!\file_exists($this->phpunitExecutablePath)) {
             throw new \InvalidArgumentException("Cannot find PHPUnit config file. Please create a phpunit.xml file.");
