@@ -44,6 +44,8 @@
         "dev": "git clean -xffd && composer install --prefer-dist --no-progress",
         "prod": "git clean -xffd && composer install --prefer-dist --no-progress --no-dev",
         "lint": "./vendor/bin/phpcs ./src --standard=PSR12",
-        "fix": "./vendor/bin/phpcbf ./src --standard=PSR12"
+        "fix": "./vendor/bin/phpcbf ./src --standard=PSR12",
+        "analyse": "./vendor/bin/psalm",
+        "analyse-with-info": "@analyse --show-info=true"
     }
 }

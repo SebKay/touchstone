@@ -15,20 +15,16 @@ class Setup extends Command
 {
     protected static $defaultName = 'setup';
 
-    protected $httpClient;
-    protected $tmp_dir;
-    protected $wpZipFilename           = 'wordpress.zip';
-    protected $wpDirectoryName         = 'wordpress';
-    protected $wpTestsZipFilename      = 'wordpress-develop.zip';
-    protected $wpTestsUnzippedFilename = 'wordpress-develop-master';
-    protected $wpTestsDirectoryName    = 'wordpress-tests-lib';
-    protected $filesystem;
-    protected $db_creds = [];
-
-    /**
-     * @var \PDO
-     */
-    protected $db_connection;
+    protected \GuzzleHttp\Client $httpClient;
+    protected string $tmp_dir;
+    protected string $wpZipFilename           = 'wordpress.zip';
+    protected string $wpDirectoryName         = 'wordpress';
+    protected string $wpTestsZipFilename      = 'wordpress-develop.zip';
+    protected string $wpTestsUnzippedFilename = 'wordpress-develop-master';
+    protected string $wpTestsDirectoryName    = 'wordpress-tests-lib';
+    protected \League\Flysystem\Filesystem $filesystem;
+    protected array $db_creds = [];
+    protected \PDO $db_connection;
 
     public function __construct()
     {
@@ -131,7 +127,7 @@ class Setup extends Command
     /**
      * Check the db credentials array has all the necessary data
      */
-    protected function validateDatabaseCredentials()
+    protected function validateDatabaseCredentials(): void
     {
         if ($this->db_creds['host'] == '') {
             throw new \InvalidArgumentException("Please provide a database host.");
@@ -157,7 +153,7 @@ class Setup extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function connectToHost(InputInterface $input, OutputInterface &$output)
+    protected function connectToHost(InputInterface $input, OutputInterface &$output): void
     {
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Testing connection...');
 
@@ -195,7 +191,7 @@ class Setup extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function createDatabase(InputInterface $input, OutputInterface &$output)
+    protected function createDatabase(InputInterface $input, OutputInterface &$output): void
     {
         if ($input->getOption('skip-db-creation')) {
             return;
@@ -234,7 +230,7 @@ class Setup extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function downloadWordPressFiles(InputInterface $input, OutputInterface &$output)
+    protected function downloadWordPressFiles(InputInterface $input, OutputInterface &$output): void
     {
         //---- Download zip file
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Downloading WordPress files...');
@@ -285,7 +281,7 @@ class Setup extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function downloadWordPressTestFiles(InputInterface $input, OutputInterface &$output)
+    protected function downloadWordPressTestFiles(InputInterface $input, OutputInterface &$output): void
     {
         //---- Download zip file
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Downloading WordPress test files...');
@@ -360,7 +356,7 @@ class Setup extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function configureWordPressTestFiles(InputInterface $input, OutputInterface &$output)
+    protected function configureWordPressTestFiles(InputInterface $input, OutputInterface &$output): void
     {
         $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Configuring WordPress test files...');
 
