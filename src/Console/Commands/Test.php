@@ -1,4 +1,5 @@
 <?php
+
 namespace WPTS\Console\Commands;
 
 use Symfony\Component\Console\Command\Command;
