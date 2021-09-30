@@ -4,7 +4,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use WPTS\Console\Commands\Setup;
-use WPTS\Console\Commands\Test;
 
 class SetupTest extends TestCase
 {
