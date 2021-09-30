@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <phpunit
 	bootstrap="touchstone-tests/bootstrap.php"
-	backupGlobals="false"
 	colors="true"
 	convertErrorsToExceptions="true"
 	convertNoticesToExceptions="true"
