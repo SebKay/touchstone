@@ -23,3 +23,6 @@ jobs:
 
       - name: Run static analysis
         run: composer analyse
+
+      - name: Run tests
+        run: composer test
