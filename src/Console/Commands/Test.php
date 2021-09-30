@@ -55,38 +55,36 @@ class Test extends Command
         }
 
         try {
-            if ($input->getOption('type') != 'test') {
-                $process_args = [
-                    $this->phpunitExecutablePath,
-                    '--config', $this->phpunitConfigPath,
-                    '--testsuite',
-                ];
+            $process_args = [
+                $this->phpunitExecutablePath,
+                '--config', $this->phpunitConfigPath,
+                '--testsuite',
+            ];
 
-                if ($input->getOption('type') == 'all') {
-                    if ($this->env == 'dev') {
-                        $process_args[] = 'Unit-dev,Integration-dev';
-                    } else {
-                        $process_args[] = 'Unit,Integration';
-                    }
+            if ($input->getOption('type') == 'all') {
+                if ($this->env == 'dev') {
+                    $process_args[] = 'Unit-dev,Integration-dev';
                 } else {
-                    switch ($input->getOption('type')) {
-                        case 'unit':
-                            if ($this->env == 'dev') {
-                                $process_args[] = 'Unit-dev';
-                            } else {
-                                $process_args[] = 'Unit';
-                            }
-                            break;
-                        case 'integration':
-                            if ($this->env == 'dev') {
-                                $process_args[] = 'Integration-dev';
-                            } else {
-                                $process_args[] = 'Integration';
-                            }
-                            break;
-                    }
+                    $process_args[] = 'Unit,Integration';
                 }
-            }
+            } else {
+                switch ($input->getOption('type')) {
+                    case 'unit':
+                        if ($this->env == 'dev') {
+                            $process_args[] = 'Unit-dev';
+                        } else {
+                            $process_args[] = 'Unit';
+                        }
+                        break;
+                    case 'integration':
+                        if ($this->env == 'dev') {
+                            $process_args[] = 'Integration-dev';
+                        } else {
+                            $process_args[] = 'Integration';
+                        }
+                        break;
+                }
+        }
 
             $output->writeln([
                 \WPTS_CMD_ICONS['loading'] . " Running {$input->getOption('type')} tests...",
