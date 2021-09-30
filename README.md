@@ -1,10 +1,10 @@
 # Touchstone
 
-A modern wrapper around the official WordPress testsuite. It can be used to run both Unit and Integration tests.
+[![PHP](https://github.com/SebKay/touchstone/actions/workflows/php.yml/badge.svg)](https://github.com/SebKay/touchstone/actions/workflows/php.yml)
 
-The official way of running the WordPress testsuite is horribly complicated and incredibly prone to user error.
+A modern wrapper around the [official WordPress testsuite](https://make.wordpress.org/cli/handbook/misc/plugin-unit-tests/). It can be used to run both Unit and Integration tests.
 
-Touchstone fixes both of those issues by making the process of creating and running tests easy.
+---
 
 ## Installation
 
@@ -135,3 +135,9 @@ composer touchstone:integration
 ### Tests Won't Run
 
 If you ever have problems running your tests, run the `setup` command. It's more than likely you've restarted your machine since the last time you ran the tests which deletes the WordPress test files. Re-running the setup process will usually fix the problem.
+
+### Why Does This Exist?
+
+The official way of running the WordPress testsuite is horribly complicated and incredibly prone to user error.
+
+Touchstone fixes both of those issues by making the process of creating and running tests easy.
