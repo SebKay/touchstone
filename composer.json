@@ -1,5 +1,5 @@
 {
-    "name": "sebkay/wp-touchstone",
+    "name": "sebkay/touchstone",
     "description": "A simple framework for running WordPress unit and integration tests.",
     "license": "MIT",
     "authors": [
