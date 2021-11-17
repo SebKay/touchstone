@@ -13,15 +13,23 @@ class Test extends Command
     protected static $defaultName = 'test';
 
     protected string $env;
+    protected string $root;
+    protected string $userProjectRoot;
+    protected string $userConfigurationFile;
     protected string $phpunitExecutablePath;
     protected string $phpunitConfigPath;
+    protected string $tmpDir;
 
     public function __construct()
     {
         parent::__construct();
 
-        $this->phpunitExecutablePath = __DIR__ . '/../../../vendor/bin/phpunit';
-        $this->phpunitConfigPath     = __DIR__ . '/../../../phpunit-touchstone.xml';
+        $this->root                  = __DIR__ . '/../../..';
+        $this->userProjectRoot       = \exec('pwd');
+        $this->userConfigurationFile = $this->userProjectRoot .'/config.touchstone.php';
+        $this->phpunitExecutablePath = $this->userProjectRoot . '/vendor/bin/phpunit';
+        $this->phpunitConfigPath     = $this->root . '/phpunit-touchstone.xml';
+        $this->tmpDir                = \sys_get_temp_dir();
     }
 
     public function setEnvironment(string $env): self
@@ -29,6 +37,17 @@ class Test extends Command
         $this->env = $env;
 
         return $this;
+    }
+
+    protected function loadUserConfiguration()
+    {
+        if (!\file_exists($this->userConfigurationFile)) {
+            \ray('Config file DOESNT exist', $this->userConfigurationFile);
+
+            return;
+        }
+
+        \ray('Config file exists', $this->userConfigurationFile);
     }
 
     protected function configure(): void
@@ -48,41 +67,27 @@ class Test extends Command
     {
         $output->writeln(\WPTS\CMD_INTRO);
 
-        if ($this->env == 'prod') {
-            $this->phpunitExecutablePath = __DIR__ . '/../../../../../../vendor/bin/phpunit';
-        }
+        // $this->loadUserConfiguration();
 
         try {
             $process_args = [
                 $this->phpunitExecutablePath,
-                '--config', $this->phpunitConfigPath,
-                '--testsuite',
             ];
 
-            if ($input->getOption('type') == 'all') {
-                if ($this->env == 'dev') {
-                    $process_args[] = 'Unit-dev,Integration-dev';
-                } else {
-                    $process_args[] = 'Unit,Integration';
-                }
-            } else {
-                switch ($input->getOption('type')) {
-                    case 'unit':
-                        if ($this->env == 'dev') {
-                            $process_args[] = 'Unit-dev';
-                        } else {
-                            $process_args[] = 'Unit';
-                        }
-                        break;
-                    case 'integration':
-                        if ($this->env == 'dev') {
-                            $process_args[] = 'Integration-dev';
-                        } else {
-                            $process_args[] = 'Integration';
-                        }
-                        break;
-                }
+            switch ($input->getOption('type')) {
+                case 'all':
+                    $process_args[] = $this->userProjectRoot . '/tests';
+                    break;
+                case 'unit':
+                    $process_args[] = $this->userProjectRoot . '/tests/Unit';
+                    break;
+                case 'integration':
+                    $process_args[] = $this->userProjectRoot . '/tests/Integration';
+                    break;
             }
+
+            $process_args[] = '--config';
+            $process_args[] = $this->phpunitConfigPath;
 
             $output->writeln([
                 \WPTS\CMD_ICONS['loading'] . " Running {$input->getOption('type')} tests...",
@@ -124,9 +129,8 @@ class Test extends Command
 
     protected function verifyTestFilesExist(): void
     {
-        $tmp_dir         = \sys_get_temp_dir();
-        $wp_files_root   = $tmp_dir . '/wordpress';
-        $test_files_root = $tmp_dir . '/wordpress-tests-lib';
+        $wp_files_root   = $this->tmpDir . '/wordpress';
+        $test_files_root = $this->tmpDir . '/wordpress-tests-lib';
 
         if (!\is_dir($wp_files_root)) {
             throw new \InvalidArgumentException("Cannot find WordPress folder. Please run setup command.");

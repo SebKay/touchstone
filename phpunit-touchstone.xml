@@ -6,18 +6,4 @@
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	>
-	<testsuites>
-		<testsuite name="Unit-dev">
-			<directory suffix="Test.php">./touchstone-tests/Unit/</directory>
-		</testsuite>
-		<testsuite name="Integration-dev">
-			<directory suffix="Test.php">./touchstone-tests/Integration/</directory>
-		</testsuite>
-		<testsuite name="Unit">
-			<directory suffix="Test.php">./../../../tests/Unit/</directory>
-		</testsuite>
-		<testsuite name="Integration">
-			<directory suffix="Test.php">./../../../tests/Integration/</directory>
-		</testsuite>
-	</testsuites>
 </phpunit>
