@@ -2,15 +2,15 @@
 
 namespace WPTS;
 
-\define('WPTS_VERSION', '1.0.0');
+const VERSION = '1.0.0';
 
-\define('WPTS_CMD_INTRO', [
-    '<options=bold>Touchstone v' . \WPTS_VERSION,
+const CMD_INTRO = [
+    '<options=bold>Touchstone v' . VERSION,
     '',
-]);
+];
 
-\define('WPTS_CMD_ICONS', [
+const CMD_ICONS = [
     'check'   => '<fg=green>✓</>',
     'cross'   => '<fg=red>𐄂</>',
     'loading' => '<fg=magenta>==></>',
-]);
+];
