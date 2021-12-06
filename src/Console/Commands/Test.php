@@ -46,7 +46,7 @@ class Test extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln(\WPTS_CMD_INTRO);
+        $output->writeln(\WPTS\CMD_INTRO);
 
         if ($this->env == 'prod') {
             $this->phpunitExecutablePath = __DIR__ . '/../../../../../../vendor/bin/phpunit';
@@ -85,7 +85,7 @@ class Test extends Command
             }
 
             $output->writeln([
-                \WPTS_CMD_ICONS['loading'] . " Running {$input->getOption('type')} tests...",
+                \WPTS\CMD_ICONS['loading'] . " Running {$input->getOption('type')} tests...",
                 '',
             ]);
 
@@ -103,14 +103,14 @@ class Test extends Command
 
             $output->writeln([
                 '',
-                \WPTS_CMD_ICONS['check'] . " Tests run successfully",
+                \WPTS\CMD_ICONS['check'] . " Tests run successfully",
             ]);
 
             return Command::SUCCESS;
         } catch (\Throwable $e) {
             $output->writeln([
                 '',
-                \WPTS_CMD_ICONS['cross'] . " {$e->getMessage()}",
+                \WPTS\CMD_ICONS['cross'] . " {$e->getMessage()}",
             ]);
 
             return Command::FAILURE;
