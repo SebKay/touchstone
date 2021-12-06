@@ -78,7 +78,7 @@ class Setup extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln(\WPTS_CMD_INTRO);
+        $output->writeln(\WPTS\CMD_INTRO);
 
         $this->db_creds = [
             'host'          => $input->getOption('db-host') ?: '',
@@ -110,14 +110,14 @@ class Setup extends Command
 
             $output->writeln([
                 '',
-                \WPTS_CMD_ICONS['check'] . " Setup complete",
+                \WPTS\CMD_ICONS['check'] . " Setup complete",
             ]);
 
             return Command::SUCCESS;
         } catch (\Throwable $e) {
             $output->writeln([
                 '',
-                \WPTS_CMD_ICONS['cross'] . " {$e->getMessage()}",
+                \WPTS\CMD_ICONS['cross'] . " {$e->getMessage()}",
             ]);
 
             return Command::FAILURE;
@@ -155,7 +155,7 @@ class Setup extends Command
      */
     protected function connectToHost(InputInterface $input, OutputInterface &$output): void
     {
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Testing connection...');
+        $output->writeln(\WPTS\CMD_ICONS['loading'] . ' Testing connection...');
 
         $db_string = "mysql:host={$this->db_creds['host']};charset=UTF8";
 
@@ -197,7 +197,7 @@ class Setup extends Command
             return;
         }
 
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Creating database...');
+        $output->writeln(\WPTS\CMD_ICONS['loading'] . ' Creating database...');
 
         try {
             $this->db_connection->query("CREATE DATABASE IF NOT EXISTS {$this->db_creds['name']}");
@@ -233,7 +233,7 @@ class Setup extends Command
     protected function downloadWordPressFiles(InputInterface $input, OutputInterface &$output): void
     {
         //---- Download zip file
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Downloading WordPress files...');
+        $output->writeln(\WPTS\CMD_ICONS['loading'] . ' Downloading WordPress files...');
 
         // Remove old files
         try {
@@ -252,7 +252,7 @@ class Setup extends Command
         \file_put_contents($this->tmp_dir . '/' . $this->wpZipFilename, $files_request->getBody()->getContents());
 
         //---- Unzip files
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Installing WordPress files...');
+        $output->writeln(\WPTS\CMD_ICONS['loading'] . ' Installing WordPress files...');
 
         if (!$this->filesystem->fileExists($this->wpZipFilename)) {
             throw new \InvalidArgumentException('No WordPress files found.');
@@ -284,7 +284,7 @@ class Setup extends Command
     protected function downloadWordPressTestFiles(InputInterface $input, OutputInterface &$output): void
     {
         //---- Download zip file
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Downloading WordPress test files...');
+        $output->writeln(\WPTS\CMD_ICONS['loading'] . ' Downloading WordPress test files...');
 
         // Remove old files
         try {
@@ -305,7 +305,7 @@ class Setup extends Command
         \file_put_contents($this->tmp_dir . '/' . $this->wpTestsZipFilename, $files_request->getBody()->getContents());
 
         //---- Unzip files
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Installing WordPress test files...');
+        $output->writeln(\WPTS\CMD_ICONS['loading'] . ' Installing WordPress test files...');
 
         if (!$this->filesystem->fileExists($this->wpTestsZipFilename)) {
             throw new \InvalidArgumentException('No WordPress test files found.');
@@ -358,7 +358,7 @@ class Setup extends Command
      */
     protected function configureWordPressTestFiles(InputInterface $input, OutputInterface &$output): void
     {
-        $output->writeln(\WPTS_CMD_ICONS['loading'] . ' Configuring WordPress test files...');
+        $output->writeln(\WPTS\CMD_ICONS['loading'] . ' Configuring WordPress test files...');
 
         $transformer = new WPConfigTransformer(
             $this->tmp_dir . '/' . $this->wpTestsDirectoryName . '/' . 'wp-tests-config.php'
