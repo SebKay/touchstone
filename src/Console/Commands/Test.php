@@ -12,10 +12,9 @@ class Test extends Command
 {
     protected static $defaultName = 'test';
 
-    protected string $env;
-    protected string $root;
-    protected string $userProjectRoot;
-    protected string $userConfigurationFile;
+    protected string $appRoot;
+    protected string $consumerRoot;
+    protected string $consumerConfigurationFile;
     protected string $phpunitExecutablePath;
     protected string $phpunitConfigPath;
     protected string $tmpDir;
@@ -24,30 +23,31 @@ class Test extends Command
     {
         parent::__construct();
 
-        $this->root                  = __DIR__ . '/../../..';
-        $this->userProjectRoot       = \exec('pwd');
-        $this->userConfigurationFile = $this->userProjectRoot .'/config.touchstone.php';
-        $this->phpunitExecutablePath = $this->userProjectRoot . '/vendor/bin/phpunit';
-        $this->phpunitConfigPath     = $this->root . '/phpunit-touchstone.xml';
-        $this->tmpDir                = \sys_get_temp_dir();
+        $this->appRoot                   = __DIR__ . '/../../..';
+        $this->consumerRoot              = \exec('pwd');
+        $this->consumerConfigurationFile = $this->consumerRoot .'/config.touchstone.php';
+        $this->phpunitExecutablePath     = $this->consumerRoot . '/vendor/bin/phpunit';
+        $this->phpunitConfigPath         = $this->appRoot . '/phpunit-touchstone.xml';
+        $this->tmpDir                    = \sys_get_temp_dir();
     }
 
-    public function setEnvironment(string $env): self
+    protected function userConfiguration(): array
     {
-        $this->env = $env;
+        if (!\file_exists($this->consumerConfigurationFile)) {
+            \ray('Config file DOESNT exist', $this->consumerConfigurationFile);
 
-        return $this;
-    }
-
-    protected function loadUserConfiguration()
-    {
-        if (!\file_exists($this->userConfigurationFile)) {
-            \ray('Config file DOESNT exist', $this->userConfigurationFile);
-
-            return;
+            return [];
         }
 
-        \ray('Config file exists', $this->userConfigurationFile);
+        \ray('Config file exists', $this->consumerConfigurationFile);
+
+        $config = include $this->consumerConfigurationFile;
+
+        if (!\is_array($config)) {
+            return [];
+        }
+
+        return $config;
     }
 
     protected function configure(): void
@@ -67,7 +67,7 @@ class Test extends Command
     {
         $output->writeln(\WPTS\CMD_INTRO);
 
-        // $this->loadUserConfiguration();
+        \ray($this->userConfiguration());
 
         try {
             $process_args = [
@@ -76,13 +76,13 @@ class Test extends Command
 
             switch ($input->getOption('type')) {
                 case 'all':
-                    $process_args[] = $this->userProjectRoot . '/tests';
+                    $process_args[] = $this->consumerRoot . '/tests';
                     break;
                 case 'unit':
-                    $process_args[] = $this->userProjectRoot . '/tests/Unit';
+                    $process_args[] = $this->consumerRoot . '/tests/Unit';
                     break;
                 case 'integration':
-                    $process_args[] = $this->userProjectRoot . '/tests/Integration';
+                    $process_args[] = $this->consumerRoot . '/tests/Integration';
                     break;
             }
 
