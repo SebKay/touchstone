@@ -25,24 +25,24 @@ class Test extends Command
     {
         parent::__construct();
 
-        $this->appRoot                   = __DIR__ . '/../../..';
-        $this->consumerRoot              = \exec('pwd');
-        $this->consumerConfigurationFile = $this->consumerRoot .'/config.touchstone.php';
-        $this->phpunitExecutablePath     = $this->consumerRoot . '/vendor/bin/phpunit';
-        $this->phpunitConfigPath         = $this->appRoot . '/phpunit-touchstone.xml';
+        $this->appRoot                   = __DIR__ . '/../../../';
+        $this->consumerRoot              = \exec('pwd') . '/';
+        $this->consumerConfigurationFile = $this->consumerRoot . 'config.touchstone.php';
+        $this->phpunitExecutablePath     = $this->consumerRoot . 'vendor/bin/phpunit';
+        $this->phpunitConfigPath         = $this->appRoot . 'phpunit-touchstone.xml';
         $this->tmpDir                    = \sys_get_temp_dir();
     }
 
     protected function userConfiguration(): UserConfiguration
     {
         if (!\file_exists($this->consumerConfigurationFile)) {
-            return [];
+            return new UserConfiguration();
         }
 
         $config = include $this->consumerConfigurationFile;
 
         if (!\is_array($config)) {
-            return [];
+            return new UserConfiguration();
         }
 
         return new UserConfiguration($config);
@@ -67,9 +67,9 @@ class Test extends Command
 
         $settings = new TestsSettings();
 
-        $settings->testsDir            = $this->consumerRoot . '/' . ($this->userConfiguration()->getTestsDirectory() ?: 'tests');
-        $settings->unitTestsDir        = $this->consumerRoot . '/' . ($this->userConfiguration()->getUnitTestsDirectory() ?: 'tests/Unit');
-        $settings->integrationTestsDir = $this->consumerRoot . '/' . ($this->userConfiguration()->getIntegrationTestsDirectory() ?: 'tests/Integration');
+        $settings->testsDir            = $this->consumerRoot . ($this->userConfiguration()->getTestsDirectory() ?: 'tests');
+        $settings->unitTestsDir        = $this->consumerRoot . ($this->userConfiguration()->getUnitTestsDirectory() ?: 'tests/Unit');
+        $settings->integrationTestsDir = $this->consumerRoot . ($this->userConfiguration()->getIntegrationTestsDirectory() ?: 'tests/Integration');
 
         try {
             $process_args = [
