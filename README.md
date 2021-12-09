@@ -14,6 +14,8 @@ Run the following command to install Touchstone in your project:
 composer require sebkay/touchstone --dev
 ```
 
+---
+
 ## Usage
 
 ### 1.) Setup
@@ -97,6 +99,25 @@ You can run either all of your tests or a single testsuite with the following co
 ./vendor/bin/touchstone test --type=integration
 ```
 
+### 4.) Configuration
+
+You can configure certain things by creating a `config.touchstone.php` file in the root of your project.
+
+Here's how to set the directories for where your tests are located:
+
+```php
+<?php
+return [
+    'directories' => [
+        'all'         => 'tests',
+        'unit'        => 'tests/Unit',
+        'integration' => 'tests/Integration',
+    ],
+];
+```
+
+---
+
 ## Composer Scripts
 
 You can create Composer scripts so you don't need to memorise the above commands.
@@ -129,6 +150,8 @@ composer touchstone:unit
 # Run Integration tests
 composer touchstone:integration
 ```
+
+---
 
 ## Troubleshooting
 
