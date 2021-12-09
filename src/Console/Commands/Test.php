@@ -7,6 +7,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use WPTS\TestsSettings;
+use WPTS\UserConfiguration;
 
 class Test extends Command
 {
@@ -31,15 +33,11 @@ class Test extends Command
         $this->tmpDir                    = \sys_get_temp_dir();
     }
 
-    protected function userConfiguration(): array
+    protected function userConfiguration(): UserConfiguration
     {
         if (!\file_exists($this->consumerConfigurationFile)) {
-            \ray('Config file DOESNT exist', $this->consumerConfigurationFile);
-
             return [];
         }
-
-        \ray('Config file exists', $this->consumerConfigurationFile);
 
         $config = include $this->consumerConfigurationFile;
 
@@ -47,7 +45,7 @@ class Test extends Command
             return [];
         }
 
-        return $config;
+        return new UserConfiguration($config);
     }
 
     protected function configure(): void
@@ -67,7 +65,11 @@ class Test extends Command
     {
         $output->writeln(\WPTS\CMD_INTRO);
 
-        \ray($this->userConfiguration());
+        $settings = new TestsSettings();
+
+        $settings->testsDir            = $this->consumerRoot . '/' . ($this->userConfiguration()->getTestsDirectory() ?: 'tests');
+        $settings->unitTestsDir        = $this->consumerRoot . '/' . ($this->userConfiguration()->getUnitTestsDirectory() ?: 'tests/Unit');
+        $settings->integrationTestsDir = $this->consumerRoot . '/' . ($this->userConfiguration()->getIntegrationTestsDirectory() ?: 'tests/Integration');
 
         try {
             $process_args = [
@@ -76,13 +78,19 @@ class Test extends Command
 
             switch ($input->getOption('type')) {
                 case 'all':
-                    $process_args[] = $this->consumerRoot . '/tests';
+                    $test_type_text = 'All';
+                    $process_args[] = $settings->testsDir;
                     break;
                 case 'unit':
-                    $process_args[] = $this->consumerRoot . '/tests/Unit';
+                    $test_type_text = 'Unit';
+                    $process_args[] = $settings->unitTestsDir;
                     break;
                 case 'integration':
-                    $process_args[] = $this->consumerRoot . '/tests/Integration';
+                    $test_type_text = 'Integration';
+                    $process_args[] = $settings->integrationTestsDir;
+                    break;
+                default:
+                    $test_type_text = '';
                     break;
             }
 
@@ -108,7 +116,7 @@ class Test extends Command
 
             $output->writeln([
                 '',
-                \WPTS\CMD_ICONS['check'] . " Tests run successfully",
+                \WPTS\CMD_ICONS['check'] . " {$test_type_text} tests finished running",
             ]);
 
             return Command::SUCCESS;
