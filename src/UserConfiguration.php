@@ -15,17 +15,17 @@ class UserConfiguration
         $this->integrationTestDir = $configuration['directories']['integration'] ?? '';
     }
 
-    public function getTestsDirectory()
+    public function getTestsDirectory(): string
     {
         return $this->testDir;
     }
 
-    public function getUnitTestsDirectory()
+    public function getUnitTestsDirectory(): string
     {
         return $this->unitTestDir;
     }
 
-    public function getIntegrationTestsDirectory()
+    public function getIntegrationTestsDirectory(): string
     {
         return $this->integrationTestDir;
     }
