@@ -107,6 +107,8 @@ Here's how to set the directories for where your tests are located:
 
 ```php
 <?php
+# config.touchstone.php
+
 return [
     'directories' => [
         'all'         => 'tests',
@@ -114,6 +116,31 @@ return [
         'integration' => 'tests/Integration',
     ],
 ];
+```
+
+Here's how to load plugins which are loaded before each test.
+
+This means for a plugin like ACF (Advanced Custom Fields) you can use functions like `get_field()` in your code and it won't break your tests.
+
+**Important:** You will need to provide the plugin files. I recommend putting them all in `bin/plugins/` in your theme/plugin and the adding that path to your `.gitignore`.
+
+```php
+<?php
+# config.touchstone.php
+
+return [
+    'plugins' => [
+        [
+            'name' => 'Advanced Custom Fields',
+            'file' => dirname(__FILE__) . '/bin/plugins/advanced-custom-fields-pro/acf.php',
+        ],
+    ],
+];
+```
+
+```gitignore
+# Directories
+bin/plugins
 ```
 
 ---
