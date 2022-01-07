@@ -103,6 +103,8 @@ You can run either all of your tests or a single testsuite with the following co
 
 You can configure certain things by creating a `config.touchstone.php` file in the root of your project.
 
+#### Directories For Tests
+
 Here's how to set the directories for where your tests are located:
 
 ```php
@@ -117,6 +119,8 @@ return [
     ],
 ];
 ```
+
+#### Plugins
 
 Here's how to load plugins which are loaded before each test.
 
@@ -141,6 +145,21 @@ return [
 ```gitignore
 # Directories
 bin/plugins
+```
+
+#### Theme
+
+Here's how to load a theme which is active for each test.
+
+```php
+<?php
+# config.touchstone.php
+
+return [
+    'theme' => [
+        'root' => dirname(__FILE__) . '/../../themes/twentytwentyone',
+    ],
+];
 ```
 
 ---
