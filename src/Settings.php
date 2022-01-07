@@ -2,11 +2,14 @@
 
 namespace WPTS;
 
+use WPTS\Consumer\ConsumerSettings;
+
 class Settings
 {
     protected string $appRootPath           = '';
     protected string $consumerRootPath      = '';
     protected string $tempDirectory         = '';
+    protected string $wpTestFilesDirectory  = '';
     protected string $phpunitConfigPath     = '';
     protected string $phpunitExecutablePath = '';
 
@@ -20,7 +23,8 @@ class Settings
     {
         $this->appRootPath           = __DIR__ . '/../';
         $this->consumerRootPath      = \exec('pwd') . '/';
-        $this->tempDirectory         = \sys_get_temp_dir();
+        $this->tempDirectory         = \sys_get_temp_dir() . '/';
+        $this->wpTestFilesDirectory  = $this->tempDirectory() . 'wordpress-tests-lib';
         $this->phpunitConfigPath     = $this->appRootPath() . 'phpunit-touchstone.xml';
         $this->phpunitExecutablePath = $this->consumerRootPath() . 'vendor/bin/phpunit';
 
@@ -50,6 +54,11 @@ class Settings
     public function tempDirectory(): string
     {
         return $this->tempDirectory;
+    }
+
+    public function wpTestFilesDirectory(): string
+    {
+        return $this->wpTestFilesDirectory;
     }
 
     public function phpunitConfigPath(): string

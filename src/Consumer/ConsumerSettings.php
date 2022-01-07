@@ -1,6 +1,6 @@
 <?php
 
-namespace WPTS;
+namespace WPTS\Consumer;
 
 class ConsumerSettings
 {
@@ -28,7 +28,12 @@ class ConsumerSettings
         $this->unitTestsDir        = $root_path . ($config['directories']['unit'] ?? '');
         $this->integrationTestsDir = $root_path . ($config['directories']['integration'] ?? '');
 
-        $this->plugins = $config['plugins'] ?? [];
+        $this->plugins = \array_map(function (array $data) {
+            return new Plugin(
+                $data['name'] ?? '',
+                $data['file'] ?? '',
+            );
+        }, $config['plugins'] ?? []);
     }
 
     public function testsDirectory(): string
@@ -46,6 +51,9 @@ class ConsumerSettings
         return $this->integrationTestsDir;
     }
 
+    /**
+     * @return Plugin[]
+     */
     public function plugins(): array
     {
         return $this->plugins;
