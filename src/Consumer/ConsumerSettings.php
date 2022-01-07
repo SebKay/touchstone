@@ -9,6 +9,7 @@ class ConsumerSettings
     protected string $integrationTestsDir = '';
 
     protected array $plugins = [];
+    protected Theme $theme;
 
     public function __construct(string $root_path)
     {
@@ -34,6 +35,10 @@ class ConsumerSettings
                 $data['file'] ?? '',
             );
         }, $config['plugins'] ?? []);
+
+        $theme_path = $config['theme']['root'] ?? '';
+
+        $this->theme = new Theme($theme_path);
     }
 
     public function testsDirectory(): string
@@ -57,5 +62,10 @@ class ConsumerSettings
     public function plugins(): array
     {
         return $this->plugins;
+    }
+
+    public function theme(): Theme
+    {
+        return $this->theme;
     }
 }
