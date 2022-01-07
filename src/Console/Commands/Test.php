@@ -7,45 +7,21 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
-use WPTS\TestsSettings;
-use WPTS\UserConfiguration;
+use WPTS\ConsumerSettings;
+use WPTS\Settings;
+use WPTS\TestingSettings;
 
 class Test extends Command
 {
     protected static $defaultName = 'test';
 
-    protected string $appRoot;
-    protected string $consumerRoot;
-    protected string $consumerConfigurationFile;
-    protected string $phpunitExecutablePath;
-    protected string $phpunitConfigPath;
-    protected string $tmpDir;
+    protected Settings $appSettings;
 
-    public function __construct()
+    public function __construct(Settings $settings)
     {
         parent::__construct();
 
-        $this->appRoot                   = __DIR__ . '/../../../';
-        $this->consumerRoot              = \exec('pwd') . '/';
-        $this->consumerConfigurationFile = $this->consumerRoot . 'config.touchstone.php';
-        $this->phpunitExecutablePath     = $this->consumerRoot . 'vendor/bin/phpunit';
-        $this->phpunitConfigPath         = $this->appRoot . 'phpunit-touchstone.xml';
-        $this->tmpDir                    = \sys_get_temp_dir();
-    }
-
-    protected function userConfiguration(): UserConfiguration
-    {
-        if (!\file_exists($this->consumerConfigurationFile)) {
-            return new UserConfiguration();
-        }
-
-        $config = include $this->consumerConfigurationFile;
-
-        if (!\is_array($config)) {
-            return new UserConfiguration();
-        }
-
-        return new UserConfiguration($config);
+        $this->appSettings = $settings;
     }
 
     protected function configure(): void
@@ -65,29 +41,32 @@ class Test extends Command
     {
         $output->writeln(\WPTS\CMD_INTRO);
 
-        $settings = new TestsSettings();
-
-        $settings->testsDir            = $this->consumerRoot . ($this->userConfiguration()->getTestsDirectory() ?: 'tests');
-        $settings->unitTestsDir        = $this->consumerRoot . ($this->userConfiguration()->getUnitTestsDirectory() ?: 'tests/Unit');
-        $settings->integrationTestsDir = $this->consumerRoot . ($this->userConfiguration()->getIntegrationTestsDirectory() ?: 'tests/Integration');
+        // \ray('User plugins', $this->appSettings->consumerSettings()->plugins());
 
         try {
+            $output->writeln([
+                \WPTS\CMD_ICONS['loading'] . " Running {$input->getOption('type')} tests...",
+                '',
+            ]);
+
+            $this->verifyTestFilesExist();
+
             $process_args = [
-                $this->phpunitExecutablePath,
+                $this->appSettings->phpunitExecutablePath(),
             ];
 
             switch ($input->getOption('type')) {
                 case 'all':
                     $test_type_text = 'All';
-                    $process_args[] = $settings->testsDir;
+                    $process_args[] = $this->appSettings->testsDirectory();
                     break;
                 case 'unit':
                     $test_type_text = 'Unit';
-                    $process_args[] = $settings->unitTestsDir;
+                    $process_args[] = $this->appSettings->unitTestsDirectory();
                     break;
                 case 'integration':
                     $test_type_text = 'Integration';
-                    $process_args[] = $settings->integrationTestsDir;
+                    $process_args[] = $this->appSettings->integrationTestsDirectory();
                     break;
                 default:
                     $test_type_text = '';
@@ -95,14 +74,7 @@ class Test extends Command
             }
 
             $process_args[] = '--config';
-            $process_args[] = $this->phpunitConfigPath;
-
-            $output->writeln([
-                \WPTS\CMD_ICONS['loading'] . " Running {$input->getOption('type')} tests...",
-                '',
-            ]);
-
-            $this->preTestChecks();
+            $process_args[] = $this->appSettings->phpunitConfigPath();
 
             $process = new Process($process_args);
 
@@ -122,23 +94,18 @@ class Test extends Command
             return Command::SUCCESS;
         } catch (\Throwable $e) {
             $output->writeln([
-                '',
                 \WPTS\CMD_ICONS['cross'] . " {$e->getMessage()}",
+                '',
             ]);
 
             return Command::FAILURE;
         }
     }
 
-    protected function preTestChecks(): void
-    {
-        $this->verifyTestFilesExist();
-    }
-
     protected function verifyTestFilesExist(): void
     {
-        $wp_files_root   = $this->tmpDir . '/wordpress';
-        $test_files_root = $this->tmpDir . '/wordpress-tests-lib';
+        $wp_files_root   = $this->appSettings->tempDirectory() . '/wordpress';
+        $test_files_root = $this->appSettings->tempDirectory() . '/wordpress-tests-lib';
 
         if (!\is_dir($wp_files_root)) {
             throw new \InvalidArgumentException("Cannot find WordPress folder. Please run setup command.");
@@ -150,13 +117,6 @@ class Test extends Command
 
         if (!\file_exists($test_files_root . '/includes/functions.php')) {
             throw new \InvalidArgumentException("Cannot find WordPress test files. Please run setup command.");
-        }
-    }
-
-    protected function verifyTestConfigExists(): void
-    {
-        if (!\file_exists($this->phpunitExecutablePath)) {
-            throw new \InvalidArgumentException("Cannot find PHPUnit config file. Please create a phpunit.xml file.");
         }
     }
 }
