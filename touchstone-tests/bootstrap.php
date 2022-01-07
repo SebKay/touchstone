@@ -1,5 +1,7 @@
 <?php
 
+use WPTS\Settings;
+
 /**
  * PHPUnit bootstrap file.
  *
@@ -25,12 +27,34 @@ if (! file_exists("{$_tests_dir}/includes/functions.php")) {
 // Give access to tests_add_filter() function.
 require_once "{$_tests_dir}/includes/functions.php";
 
+// echo " !!! tests dir " . $settings->consumerSettings()->plugins() . "\n\n";
+
 /**
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin()
 {
     // require dirname( dirname( __FILE__ ) ) . '/../../../wp-touchstone-test-plugin.php';
+
+    $settings = new Settings();
+
+    $consumer_plugins = $settings->consumerSettings()->plugins();
+
+    if (!$consumer_plugins) {
+        return;
+    }
+
+    foreach ($consumer_plugins as $plugin) {
+        $file = $plugin['file'];
+
+        if (!file_exists($file)) {
+            ray("Plugin file not found", $file)->red();
+            continue;
+        }
+        ray("Plugin file found", $file)->green();
+
+        require $file;
+    }
 }
 
 tests_add_filter('muplugins_loaded', '_manually_load_plugin');

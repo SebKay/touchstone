@@ -4,7 +4,6 @@
 use Symfony\Component\Console\Application;
 use WPTS\Console\Commands\Setup;
 use WPTS\Console\Commands\Test;
-use WPTS\ConsumerSettings;
 use WPTS\Settings;
 
 use const WPTS\NAME;
