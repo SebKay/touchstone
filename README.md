@@ -22,14 +22,22 @@ composer require sebkay/touchstone --dev
 
 Running the setup process downloads and installs both WordPress and the official WordPress test files in your temp directory.
 
-Here's the command needed to run the setup process:
+```shell
+# Options
+./vendor/bin/touchstone setup --db-host=[HOST] --db-socket=[SOCKET PATH] --db-name=[DATABASE NAME] --db-user=[DATABASE USERNAME] --db-pass=[DATABASE PASSWORD] --skip-db-creation=[TRUE/FALSE]
+```
+
+#### Regular Connection
 
 ```shell
-# Command
-./vendor/bin/touchstone setup --db-host=[HOST] --db-name=[DATABASE NAME] --db-user=[DATABASE USER] --db-pass=[DATABASE PASSWORD] --skip-db-creation=[FALSE]
-
 # Example
-./vendor/bin/touchstone setup --db-host=127.0.0.1:8889 --db-name=touchstone_tests --db-user=root --db-pass=root --skip-db-creation=true
+./vendor/bin/touchstone setup --db-host=127.0.0.1:8889 --db-name=touchstone_tests --db-user=root --db-pass=root
+```
+
+#### via a Socket
+
+```shell
+./vendor/bin/touchstone setup --db-host=127.0.0.1:8889 --db-socket="/path/to/mysqld.sock" --db-name=touchstone_tests --db-user=root --db-pass=root
 ```
 
 ### 2.) Creating Tests
@@ -120,7 +128,7 @@ return [
 ];
 ```
 
-#### Plugins
+#### WordPress Plugins
 
 Here's how to load plugins which are loaded before each test.
 
@@ -147,7 +155,7 @@ return [
 bin/plugins
 ```
 
-#### Theme
+#### WordPress Theme
 
 Here's how to load a theme which is active for each test.
 
@@ -173,7 +181,7 @@ To do so add the following to your `composer.json` file:
 ```json
 ...
     "scripts": {
-        "touchstone:setup": "./vendor/bin/touchstone setup --db-host=[HOST] --db-name=[DATABASE NAME] --db-user=[DATABASE USER] --db-pass=[DATABASE PASSWORD] --skip-db-creation=[FALSE]",
+        "touchstone:setup": "./vendor/bin/touchstone setup --db-host=[HOST] --db-name=[DATABASE NAME] --db-user=[DATABASE USER] --db-pass=[DATABASE PASSWORD] --skip-db-creation=true",
         "touchstone:test": "./vendor/bin/touchstone test",
         "touchstone:unit": "./vendor/bin/touchstone test --type=unit",
         "touchstone:integration": "./vendor/bin/touchstone test --type=integration"
