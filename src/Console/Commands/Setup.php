@@ -15,7 +15,7 @@ class Setup extends Command
     protected static $defaultName = 'setup';
 
     protected \GuzzleHttp\Client $httpClient;
-    protected string $tmp_dir;
+    protected string $tmp_dir                 = '';
     protected string $wpZipFilename           = 'wordpress.zip';
     protected string $wpDirectoryName         = 'wordpress';
     protected string $wpTestsZipFilename      = 'wordpress-develop.zip';
@@ -46,6 +46,13 @@ class Setup extends Command
         );
 
         $this->addOption(
+            'db-socket',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            "What's the socket path for connecting to the database?"
+        );
+
+        $this->addOption(
             'db-name',
             null,
             InputOption::VALUE_REQUIRED,
@@ -70,7 +77,7 @@ class Setup extends Command
             'skip-db-creation',
             null,
             InputOption::VALUE_OPTIONAL,
-            "Skip the creation of the database if it already exists",
+            "Skip creation of the database because it already exists?",
             false
         );
     }
