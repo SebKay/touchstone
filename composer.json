@@ -27,7 +27,7 @@
     "autoload": {
         "psr-4": {
             "WPTS\\": "./src/",
-            "WPTS\\Tests\\": "./touchstone-tests/"
+            "WPTS\\Tests\\": "./tests-consumer/"
         },
         "files": [
             "./inc/helpers.php"

@@ -25,7 +25,7 @@ class Settings
         $this->consumerRootPath      = \exec('pwd') . '/';
         $this->tempDirectory         = \sys_get_temp_dir() . '/';
         $this->wpTestFilesDirectory  = $this->tempDirectory() . 'wordpress-tests-lib';
-        $this->phpunitConfigPath     = $this->appRootPath() . 'phpunit-touchstone.xml';
+        $this->phpunitConfigPath     = $this->appRootPath() . 'phpunit-consumer.xml';
         $this->phpunitExecutablePath = $this->consumerRootPath() . 'vendor/bin/phpunit';
 
         $this->consumerSettings = new ConsumerSettings($this->consumerRootPath());
