@@ -41,7 +41,7 @@ class Setup extends Command
         $this->addOption(
             'db-host',
             null,
-            InputOption::VALUE_REQUIRED,
+            InputOption::VALUE_OPTIONAL,
             "What's the host name of the database?"
         );
 
@@ -88,6 +88,7 @@ class Setup extends Command
 
         $this->db_creds = [
             'host'          => $input->getOption('db-host') ?: '',
+            'socket'        => $input->getOption('db-socket') ?: '',
             'name'          => $input->getOption('db-name') ?: '',
             'user'          => $input->getOption('db-user') ?: '',
             'pass'          => $input->getOption('db-pass') ?: '',
@@ -139,6 +140,10 @@ class Setup extends Command
             throw new \InvalidArgumentException("Please provide a database host.");
         }
 
+        if ($this->db_creds['socket'] && $this->db_creds['host'] == '') {
+            throw new \InvalidArgumentException("Please provide a database host, alongside a unix socket.");
+        }
+
         if ($this->db_creds['name'] == '') {
             throw new \InvalidArgumentException("Please provide a database name.");
         }
@@ -163,11 +168,19 @@ class Setup extends Command
     {
         $output->writeln(\WPTS\CMD_ICONS['loading'] . ' Testing connection...');
 
-        $db_string = "mysql:host={$this->db_creds['host']};charset=UTF8";
+        $db_string = "mysql:";
+
+        if ($input->getOption('db-socket')) {
+            $db_string .= "unix_socket={$this->db_creds['socket']};";
+        } else {
+            $db_string .= "host={$this->db_creds['host']};";
+        }
 
         if ($input->getOption('skip-db-creation')) {
-            $db_string .= ";dbname={$this->db_creds['name']}";
+            $db_string .= "dbname={$this->db_creds['name']};";
         }
+
+        $db_string .= "charset=UTF8";
 
         try {
             $db_connection = new \PDO(
@@ -180,6 +193,8 @@ class Setup extends Command
 
             $this->db_connection = $db_connection;
         } catch (\PDOException $e) {
+            \ray($e)->red();
+
             switch ($e->getCode()) {
                 case '1045':
                     throw new \Exception("Couldn't connect to host. Is the username or password incorrect?");
