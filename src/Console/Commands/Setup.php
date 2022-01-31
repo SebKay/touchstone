@@ -41,7 +41,7 @@ class Setup extends Command
         $this->addOption(
             'db-host',
             null,
-            InputOption::VALUE_OPTIONAL,
+            InputOption::VALUE_REQUIRED,
             "What's the host name of the database?"
         );
 
@@ -136,12 +136,12 @@ class Setup extends Command
      */
     protected function validateDatabaseCredentials(): void
     {
-        if ($this->db_creds['host'] == '') {
-            throw new \InvalidArgumentException("Please provide a database host.");
-        }
-
         if ($this->db_creds['socket'] && $this->db_creds['host'] == '') {
             throw new \InvalidArgumentException("Please provide a database host, alongside a unix socket.");
+        }
+
+        if ($this->db_creds['host'] == '') {
+            throw new \InvalidArgumentException("Please provide a database host.");
         }
 
         if ($this->db_creds['name'] == '') {
@@ -193,8 +193,6 @@ class Setup extends Command
 
             $this->db_connection = $db_connection;
         } catch (\PDOException $e) {
-            \ray($e)->red();
-
             switch ($e->getCode()) {
                 case '1045':
                     throw new \Exception("Couldn't connect to host. Is the username or password incorrect?");
@@ -389,7 +387,12 @@ class Setup extends Command
             $transformer->update('constant', 'DB_NAME', $this->db_creds['name']);
             $transformer->update('constant', 'DB_USER', $this->db_creds['user']);
             $transformer->update('constant', 'DB_PASSWORD', $this->db_creds['pass']);
-            $transformer->update('constant', 'DB_HOST', $this->db_creds['host']);
+
+            if ($this->db_creds['host'] && $this->db_creds['socket']) {
+                $transformer->update('constant', 'DB_HOST', "{$this->db_creds['host']}:{$this->db_creds['socket']}");
+            } else {
+                $transformer->update('constant', 'DB_HOST', $this->db_creds['host']);
+            }
         } catch (\Throwable $e) {
             throw new \Exception("There was an error configuring the WordPress test files.");
         }
