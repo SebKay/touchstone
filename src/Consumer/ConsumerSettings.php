@@ -59,4 +59,9 @@ class ConsumerSettings
     {
         return $this->theme;
     }
+
+    public function bootstrapFile(): string
+    {
+        return $this->testsDir . '/bootstrap.php';
+    }
 }
