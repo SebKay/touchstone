@@ -409,7 +409,7 @@ class Setup extends Command
         }
     }
 
-    function runConsumerSetup($input, $output)
+    protected function runConsumerSetup($input, $output)
     {
         $output->writeln(\WPTS\CMD_ICONS['loading'] . ' Running consumer setup...');
 
