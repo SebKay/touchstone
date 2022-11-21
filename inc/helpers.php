@@ -2,8 +2,8 @@
 
 namespace WPTS;
 
-const NAME = 'Touchstone';
-const VERSION = '1.2.0';
+const NAME    = 'Touchstone';
+const VERSION = '2.0.0';
 
 const CMD_INTRO = [
     '<options=bold>' . NAME . ' v' . VERSION,

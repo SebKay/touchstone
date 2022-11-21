@@ -24,7 +24,7 @@ Running the setup process downloads and installs both WordPress and the official
 
 ```shell
 # Options
-./vendor/bin/touchstone setup --db-host=[HOST] --db-socket=[SOCKET PATH] --db-name=[DATABASE NAME] --db-user=[DATABASE USERNAME] --db-pass=[DATABASE PASSWORD] --skip-db-creation=[TRUE/FALSE]
+./vendor/bin/touchstone setup --db-host=[HOST] --db-socket=[SOCKET PATH] --db-name=[DATABASE NAME] --db-user=[DATABASE USERNAME] --db-pass=[DATABASE PASSWORD] skip-db-creation
 ```
 
 #### Regular Connection

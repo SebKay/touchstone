@@ -76,7 +76,7 @@ class Setup extends Command
         $this->addOption(
             'skip-db-creation',
             null,
-            InputOption::VALUE_OPTIONAL,
+            InputOption::VALUE_NEGATABLE,
             "Skip creation of the database because it already exists?",
             false
         );
@@ -176,7 +176,7 @@ class Setup extends Command
             $db_string .= "host={$this->db_creds['host']};";
         }
 
-        if ($input->getOption('skip-db-creation')) {
+        if ($input->getOption('skip-db-creation') == true) {
             $db_string .= "dbname={$this->db_creds['name']};";
         }
 
@@ -194,8 +194,12 @@ class Setup extends Command
             $this->db_connection = $db_connection;
         } catch (\PDOException $e) {
             switch ($e->getCode()) {
-                case '1045':
-                    throw new \Exception("Couldn't connect to host. Is the username or password incorrect?");
+                case 1044:
+                case 1045:
+                    throw new \Exception("Couldn't connect to database. Is the username or password incorrect?");
+                    break;
+                case 1049:
+                    throw new \Exception("Couldn't find the database \"{$this->db_creds['name']}\".");
                     break;
                 default:
                     throw new \Exception("Couldn't connect to host. Please check the details.");
