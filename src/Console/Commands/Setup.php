@@ -9,10 +9,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use WPConfigTransformer;
+use WPTS\Settings;
 
 class Setup extends Command
 {
     protected static $defaultName = 'setup';
+
+    protected Settings $appSettings;
 
     protected \GuzzleHttp\Client $httpClient;
     protected string $tmp_dir                 = '';
@@ -25,9 +28,11 @@ class Setup extends Command
     protected array $db_creds = [];
     protected \PDO $db_connection;
 
-    public function __construct()
+    public function __construct(Settings $settings)
     {
         parent::__construct();
+
+        $this->appSettings = $settings;
 
         $this->httpClient = new \GuzzleHttp\Client();
         $this->tmp_dir    = \sys_get_temp_dir();
@@ -105,6 +110,7 @@ class Setup extends Command
          * --- 6. Download WordPress test files
          * --- 7. Save WordPress test files
          * --- 8. Change config data in wp-tests-config.php
+         * --- 9. Run consumer setup closure
          */
 
         try {
@@ -114,6 +120,7 @@ class Setup extends Command
             $this->downloadWordPressFiles($input, $output);
             $this->downloadWordPressTestFiles($input, $output);
             $this->configureWordPressTestFiles($input, $output);
+            $this->runConsumerSetup($input, $output);
 
             $output->writeln([
                 '',
@@ -400,5 +407,12 @@ class Setup extends Command
         } catch (\Throwable $e) {
             throw new \Exception("There was an error configuring the WordPress test files.");
         }
+    }
+
+    protected function runConsumerSetup($input, $output)
+    {
+        $output->writeln(\WPTS\CMD_ICONS['loading'] . ' Running consumer setup...');
+
+        $this->appSettings->consumerSettings()->setup();
     }
 }

@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use WPTS\Console\Commands\Setup;
+use WPTS\Settings;
 
 class SetupTest extends TestCase
 {
@@ -18,7 +19,7 @@ class SetupTest extends TestCase
     {
         $app = new Application();
 
-        $app->add(new Setup());
+        $app->add(new Setup(new Settings()));
 
         $this->cmd       = $app->find('setup');
         $this->cmdTester = new CommandTester($this->cmd);

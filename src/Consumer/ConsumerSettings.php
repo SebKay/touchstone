@@ -4,6 +4,8 @@ namespace WPTS\Consumer;
 
 class ConsumerSettings
 {
+    protected array $config;
+
     protected string $testsDir            = '';
     protected string $unitTestsDir        = '';
     protected string $integrationTestsDir = '';
@@ -13,8 +15,9 @@ class ConsumerSettings
 
     public function __construct(string $root_path)
     {
-        $file   = $root_path . 'config.touchstone.php';
-        $config = \file_exists($file) ? include $file : [];
+        $file         = $root_path . 'config.touchstone.php';
+        $this->config = \file_exists($file) ? include $file : [];
+        $config       = \file_exists($file) ? include $file : [];
 
         $this->testsDir            = $root_path . ($config['directories']['all'] ?? '');
         $this->unitTestsDir        = $root_path . ($config['directories']['unit'] ?? '');
@@ -63,5 +66,14 @@ class ConsumerSettings
     public function bootstrapFile(): string
     {
         return $this->testsDir . '/bootstrap.php';
+    }
+
+    public function setup()
+    {
+        $callable = $this->config['setup'] ?? null;
+
+        if (\is_callable($callable)) {
+            $callable();
+        }
     }
 }
