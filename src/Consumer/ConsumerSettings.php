@@ -13,17 +13,8 @@ class ConsumerSettings
 
     public function __construct(string $root_path)
     {
-        $file = $root_path . 'config.touchstone.php';
-
-        if (!\file_exists($file)) {
-            return;
-        }
-
-        $config = include $file;
-
-        if (!\is_array($config)) {
-            return;
-        }
+        $file   = $root_path . 'config.touchstone.php';
+        $config = \file_exists($file) ? include $file : [];
 
         $this->testsDir            = $root_path . ($config['directories']['all'] ?? '');
         $this->unitTestsDir        = $root_path . ($config['directories']['unit'] ?? '');

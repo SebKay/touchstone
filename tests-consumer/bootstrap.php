@@ -38,25 +38,27 @@ tests_add_filter('muplugins_loaded', function () use ($settings) {
     }
 
     //---- Theme
-    $theme_dir = $settings->consumerSettings()->theme()->directoryPath();
+    $theme = $settings->consumerSettings()->theme();
 
-    if (is_dir($theme_dir)) {
-        $current_theme = $settings->consumerSettings()->theme()->directoryName();
-        $theme_root    = dirname($theme_dir);
+    if ($theme) {
+        if (is_dir($theme->directoryPath())) {
+            $current_theme = $settings->consumerSettings()->theme()->directoryName();
+            $theme_root    = dirname($theme->directoryPath());
 
-        add_filter('theme_root', function () use ($theme_root) {
-            return $theme_root;
-        });
+            add_filter('theme_root', function () use ($theme_root) {
+                return $theme_root;
+            });
 
-        register_theme_directory($theme_root);
+            register_theme_directory($theme_root);
 
-        add_filter('pre_option_template', function () use ($current_theme) {
-            return $current_theme;
-        });
+            add_filter('pre_option_template', function () use ($current_theme) {
+                return $current_theme;
+            });
 
-        add_filter('pre_option_stylesheet', function () use ($current_theme) {
-            return $current_theme;
-        });
+            add_filter('pre_option_stylesheet', function () use ($current_theme) {
+                return $current_theme;
+            });
+        }
     }
 });
 
