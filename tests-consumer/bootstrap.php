@@ -60,6 +60,13 @@ tests_add_filter('muplugins_loaded', function () use ($settings) {
             });
         }
     }
+
+    //---- Bootstrap
+    $bootstrap = $settings->consumerSettings()->bootstrapFile();
+
+    if (file_exists($bootstrap)) {
+        require_once $bootstrap;
+    }
 });
 
 /**
