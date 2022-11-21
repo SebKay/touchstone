@@ -194,8 +194,9 @@ class Setup extends Command
             $this->db_connection = $db_connection;
         } catch (\PDOException $e) {
             switch ($e->getCode()) {
+                case 1044:
                 case 1045:
-                    throw new \Exception("Couldn't connect to host. Is the username or password incorrect?");
+                    throw new \Exception("Couldn't connect to database. Is the username or password incorrect?");
                     break;
                 case 1049:
                     throw new \Exception("Couldn't find the database \"{$this->db_creds['name']}\".");
