@@ -5,14 +5,6 @@ use WPTS\Settings;
 $settings = new Settings();
 
 /**
- * Check consumer isn't running PHP 8.0+
- */
-if (PHP_MAJOR_VERSION >= 8) {
-    echo "The scaffolded tests cannot currently be run on PHP 8.0+. See https://github.com/wp-cli/scaffold-command/issues/285" . PHP_EOL;
-    exit(1);
-}
-
-/**
  * Set up
  */
 $tests_dir = $settings->wpTestFilesDirectory();
