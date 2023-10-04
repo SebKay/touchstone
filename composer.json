@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": "^8.0",
-        "phpunit/phpunit": "^10.3",
+        "phpunit/phpunit": "^10.2",
         "sebkay/wp-unit-test-stubs": "^1.0",
         "symfony/console": "^5.3",
         "guzzlehttp/guzzle": "^7.3",
