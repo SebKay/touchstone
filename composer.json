@@ -18,7 +18,8 @@
         "wp-cli/wp-config-transformer": "^1.2",
         "symfony/process": "^5.3",
         "php-stubs/wordpress-stubs": "^5.8",
-        "vlucas/phpdotenv": "^5.5"
+        "vlucas/phpdotenv": "^5.5",
+        "yoast/phpunit-polyfills": "^2.0"
     },
     "require-dev": {
         "spatie/ray": "^1.26",
