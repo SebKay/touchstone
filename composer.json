@@ -10,14 +10,14 @@
     ],
     "require": {
         "php": "^8.2",
-        "phpunit/phpunit": "^10.5",
-        "symfony/console": "^6.4"
+        "symfony/console": "^6.4",
+        "pestphp/pest": "^2.34",
+        "php-stubs/wordpress-tests-stubs": "^6.3",
+        "php-stubs/wordpress-stubs": "^6.4"
     },
     "require-dev": {
         "spatie/ray": "^1.41",
-        "laravel/pint": "^1.14",
-        "php-stubs/wordpress-tests-stubs": "^6.3",
-        "php-stubs/wordpress-stubs": "^6.4"
+        "laravel/pint": "^1.14"
     },
     "autoload": {
         "psr-4": {
@@ -33,8 +33,15 @@
     "scripts": {
         "dev": "git clean -xffd && composer install --prefer-dist --no-progress",
         "prod": "git clean -xffd && composer install --prefer-dist --no-progress --no-dev",
-        "test": "./vendor/bin/phpunit",
+        "test": [
+            "./vendor/bin/pest"
+        ],
         "lint": "./vendor/bin/pint --preset psr12 --test -v",
         "fix": "./vendor/bin/pint --preset psr12"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }
