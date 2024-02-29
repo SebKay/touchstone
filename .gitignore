@@ -4,3 +4,4 @@ node_modules/
 
 # Files
 composer.lock
+db/sqlite.db
