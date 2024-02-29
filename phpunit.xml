@@ -12,8 +12,11 @@
         </whitelist>
     </filter>
     <testsuites>
-        <testsuite name="Integration">
-            <directory suffix="Test.php">./tests/Integration/</directory>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
 </phpunit>
