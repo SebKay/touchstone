@@ -31,13 +31,21 @@
         "bin/touchstone"
     ],
     "scripts": {
-        "dev": "git clean -xffd && composer install --prefer-dist --no-progress",
-        "prod": "git clean -xffd && composer install --prefer-dist --no-progress --no-dev",
+        "dev": [
+            "composer install --prefer-dist --no-progress"
+        ],
+        "prod": [
+            "composer install --prefer-dist --no-progress --no-dev"
+        ],
         "test": [
             "./vendor/bin/pest"
         ],
-        "lint": "./vendor/bin/pint --preset psr12 --test -v",
-        "fix": "./vendor/bin/pint --preset psr12"
+        "lint": [
+            "./vendor/bin/pint --preset psr12 --test -v"
+        ],
+        "fix": [
+            "./vendor/bin/pint --preset psr12"
+        ]
     },
     "config": {
         "allow-plugins": {
