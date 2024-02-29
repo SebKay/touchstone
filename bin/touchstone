@@ -2,9 +2,6 @@
 <?php
 
 use Symfony\Component\Console\Application;
-use WPTS\Console\Commands\Setup;
-use WPTS\Console\Commands\Test;
-use WPTS\Settings;
 
 use const WPTS\NAME;
 use const WPTS\VERSION;
@@ -23,10 +20,5 @@ foreach ($autoloader_files as $env_key => $file) {
 }
 
 $app = new Application(NAME, VERSION);
-
-$settings = new Settings();
-
-$app->add(new Setup($settings));
-$app->add(new Test($settings));
 
 $app->run();
