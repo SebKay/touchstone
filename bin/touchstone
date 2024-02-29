@@ -21,4 +21,6 @@ foreach ($autoloaders as $env_key => $file) {
 
 $app = new Application(NAME, VERSION);
 
+$app->add(new \SebKay\Touchstone\Console\Commands\Setup());
+
 $app->run();

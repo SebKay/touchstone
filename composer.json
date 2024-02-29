@@ -13,7 +13,8 @@
         "symfony/console": "^6.4",
         "pestphp/pest": "^2.34",
         "php-stubs/wordpress-tests-stubs": "^6.3",
-        "php-stubs/wordpress-stubs": "^6.4"
+        "php-stubs/wordpress-stubs": "^6.4",
+        "laravel/prompts": "^0.1.16"
     },
     "require-dev": {
         "spatie/ray": "^1.41",
