@@ -4,9 +4,8 @@
 
 namespace SebKay\Touchstone\Console\Commands;
 
-use const SebKay\Touchstone\SQLITE_FILE_PATH;
-
 use GuzzleHttp\Client as Http;
+
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use SebKay\Touchstone\SQLiteConnection;
@@ -16,10 +15,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function Laravel\Prompts\error;
+
 use function Laravel\Prompts\info;
+use function Laravel\Prompts\note;
 use function Laravel\Prompts\password;
 use function Laravel\Prompts\spin;
 use function Laravel\Prompts\text;
+
+use const SebKay\Touchstone\SQLITE_FILE_PATH;
 
 #[AsCommand(name: 'setup')]
 class Setup extends Command
@@ -68,12 +71,16 @@ class Setup extends Command
 
         // \ray($db);
 
+        note('===== Touchstone =====');
+
         try {
             $this->createDatabase();
             $this->deleteWordPressFiles();
             $this->downloadWordPressFiles();
         } catch (\Throwable $e) {
             error($e->getMessage());
+
+            error($e);
 
             return Command::FAILURE;
         }
@@ -108,7 +115,7 @@ class Setup extends Command
             \touch(SQLITE_FILE_PATH);
         }, 'Creating database...');
 
-        info('Database created');
+        info('✓  Database created');
     }
 
     protected function latestWordPressDownloadUrl()
@@ -133,7 +140,7 @@ class Setup extends Command
             }
         }, 'Deleteing old WordPress files...');
 
-        info('Old WordPress files deleted');
+        info('✓  Old WordPress files deleted');
     }
 
     protected function downloadWordPressFiles()
@@ -148,7 +155,7 @@ class Setup extends Command
             \file_put_contents($this->tempDir.'/touchstone-wordpress.zip', $response->getBody()->getContents());
         }, 'Downloading WordPress...');
 
-        info('WordPress downloaded');
+        info('✓  WordPress downloaded');
     }
 
     protected function deleteWordPressTestFiles(): void
