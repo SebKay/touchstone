@@ -52,14 +52,14 @@ tests/
         ExampleIntegrationTest.php
 ```
 
-All your Unit tests will need to extend the `WPTS\Tests\UnitTest` class and all your integrationt tests will need to extend the `WPTS\Tests\IntegrationTest` class.
+All your Unit tests will need to extend the `SebKay\Touchstone\Tests\UnitTest` class and all your integrationt tests will need to extend the `SebKay\Touchstone\Tests\IntegrationTest` class.
 
 Here's an example Unit test:
 
 ```php
 <?php
 
-namespace WPTS\Tests\Unit;
+namespace SebKay\Touchstone\Tests\Unit;
 
 class ExampleUnitTest extends UnitTest
 {
@@ -75,7 +75,7 @@ Here's an example Integration test:
 ```php
 <?php
 
-namespace WPTS\Tests\Integration;
+namespace SebKay\Touchstone\Tests\Integration;
 
 class ExampleIntegrationTest extends IntegrationTest
 {

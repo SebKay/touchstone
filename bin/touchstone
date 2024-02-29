@@ -3,15 +3,15 @@
 
 use Symfony\Component\Console\Application;
 
-use const WPTS\NAME;
-use const WPTS\VERSION;
+use const SebKay\Touchstone\NAME;
+use const SebKay\Touchstone\VERSION;
 
-$autoloader_files = [
+$autoloaders = [
     'app'      => __DIR__ . '/../vendor/autoload.php',
     'consumer' => \exec('pwd') . '/vendor/autoload.php',
 ];
 
-foreach ($autoloader_files as $env_key => $file) {
+foreach ($autoloaders as $env_key => $file) {
     if (file_exists($file)) {
         require $file;
 

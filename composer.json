@@ -28,8 +28,7 @@
     },
     "autoload": {
         "psr-4": {
-            "WPTS\\": "./src/",
-            "WPTS\\Tests\\": "./tests-consumer/"
+            "SebKay\\Touchstone\\": "./src/"
         },
         "files": [
             "./inc/helpers.php"

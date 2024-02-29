@@ -1,6 +1,6 @@
 <?php
 
-namespace WPTS;
+namespace SebKay\Touchstone;
 
 const NAME    = 'Touchstone';
 const VERSION = '2';
